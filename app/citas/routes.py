@@ -37,7 +37,7 @@ def index():
     if estado:
         query = query.filter(Cita.estado == estado)
     
-    # BÚSQUEDA 
+    # BÚSQUEDA MEJORADA Y CORREGIDA
     if search:
         conditions = []
         search_terms = search.split()
@@ -46,15 +46,14 @@ def index():
         # 1. SI ES NÚMERO: BUSCAR POR ID EXACTO
         # ============================================
         if search.isdigit():
-            # Buscar EXACTAMENTE el número
             conditions.append(Cita.id == int(search))
         else:
             # ============================================
             # 2. SI NO ES NÚMERO: BUSCAR POR TEXTO
             # ============================================
-            # Buscar por nombre completo (concatenado)
+            
             conditions.append(
-                db.func.concat(Paciente.nombres, ' ', Paciente.apellidos).ilike(f'%{search}%')
+                (Paciente.nombres + ' ' + Paciente.apellidos).ilike(f'%{search}%')
             )
             
             # Buscar por nombre o apellido individual
@@ -80,7 +79,6 @@ def index():
     
     # Ordenar por ID DESCENDENTE (más reciente primero)
     citas = query.order_by(Cita.id.desc()).all()
-    
     
     return render_template('citas/index.html', citas=citas, search=search, estado=estado)
 

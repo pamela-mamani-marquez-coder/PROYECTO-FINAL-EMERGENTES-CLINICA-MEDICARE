@@ -24,44 +24,23 @@ def index():
         flash('⛔ No tienes permisos.', 'danger')
         return redirect(url_for('core.landing'))
     
-    # APLICAR BÚSQUEDA si hay término
+    # BÚSQUEDA SIMPLE Y COMPATIBLE
     if search:
-        search_terms = search.split()
-        conditions = []
-        
-        # Buscar por ID
-        if search.isdigit():
-            conditions.append(Paciente.id == int(search))
-        
-        # Buscar por CI
-        conditions.append(Paciente.ci.ilike(f'%{search}%'))
-        
-        # Buscar por nombre completo o parcial
-        for term in search_terms:
-            conditions.append(Paciente.nombres.ilike(f'%{term}%'))
-            conditions.append(Paciente.apellidos.ilike(f'%{term}%'))
-        
-        # Buscar por nombre completo (concatenado)
-        conditions.append(db.func.concat(Paciente.nombres, ' ', Paciente.apellidos).ilike(f'%{search}%'))
-        conditions.append(db.func.concat(Paciente.nombres, Paciente.apellidos).ilike(f'%{search}%'))
-        
-        # Buscar por teléfono
-        conditions.append(Paciente.telefono.ilike(f'%{search}%'))
-        
-        # Buscar por email
-        conditions.append(Paciente.email.ilike(f'%{search}%'))
-        
-        # Buscar por seguro médico
-        conditions.append(Paciente.seguro_medico.ilike(f'%{search}%'))
-        
-        # Aplicar todas las condiciones con OR
-        query = query.filter(db.or_(*conditions))
+        search_term = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                Paciente.nombres.ilike(search_term),
+                Paciente.apellidos.ilike(search_term),
+                Paciente.ci.ilike(search_term),
+                Paciente.telefono.ilike(search_term),
+                Paciente.email.ilike(search_term)
+            )
+        )
     
     # Ordenar por ID descendente (más reciente primero)
     pacientes = query.order_by(Paciente.id.desc()).all()
     
     return render_template('pacientes/index.html', pacientes=pacientes, search=search)
-
 
 # ============================================
 # CREAR PACIENTE

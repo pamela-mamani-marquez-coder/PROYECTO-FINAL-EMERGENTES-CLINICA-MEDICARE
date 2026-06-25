@@ -18,50 +18,27 @@ from sqlalchemy import func
 @login_required
 def index():
     """Lista todos los médicos con búsqueda"""
-    # Obtener término de búsqueda
     search = request.args.get('search', '').strip()
     
-    # Construir consulta base
     query = Medico.query
     
-    # Aplicar búsqueda si hay término
+    # BÚSQUEDA SIMPLE Y COMPATIBLE
     if search:
-        search_terms = search.split()
-        conditions = []
-        
-        # Buscar por ID
-        if search.isdigit():
-            conditions.append(Medico.id == int(search))
-        
-        # Buscar por nombre completo o parcial
-        for term in search_terms:
-            conditions.append(Medico.nombre.ilike(f'%{term}%'))
-            conditions.append(Medico.apellidos.ilike(f'%{term}%'))
-        
-        # Buscar por nombre completo (concatenado)
-        conditions.append(db.func.concat(Medico.nombre, ' ', Medico.apellidos).ilike(f'%{search}%'))
-        conditions.append(db.func.concat(Medico.nombre, Medico.apellidos).ilike(f'%{search}%'))
-        
-        # Buscar por especialidad
-        conditions.append(Medico.especialidad.has(Especialidad.nombre.ilike(f'%{search}%')))
-        
-        # Buscar por email
-        conditions.append(Medico.email.ilike(f'%{search}%'))
-        
-        # Buscar por teléfono
-        conditions.append(Medico.telefono.ilike(f'%{search}%'))
-        
-        # Buscar por consultorio
-        conditions.append(Medico.consultorio.ilike(f'%{search}%'))
-        
-        # Aplicar todas las condiciones con OR
-        query = query.filter(db.or_(*conditions))
+        search_term = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                Medico.nombre.ilike(search_term),
+                Medico.apellidos.ilike(search_term),
+                Medico.especialidad.has(Especialidad.nombre.ilike(search_term)),
+                Medico.telefono.ilike(search_term),
+                Medico.email.ilike(search_term)
+            )
+        )
     
     # Ordenar por ID descendente (más reciente primero)
     medicos = query.order_by(Medico.id.desc()).all()
     
     return render_template('medicos/index.html', medicos=medicos, search=search)
-
 
 # ============================================
 # DASHBOARD DEL MÉDICO

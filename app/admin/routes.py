@@ -110,58 +110,38 @@ def dashboard():
 
 
 # ============================================
-# LISTAR USUARIOS - Gestión de Usuarios
+# LISTAR USUARIOS (PANEL DE ADMIN)
 # ============================================
 @bp_admin.route('/usuarios')
 @login_required
-def usuarios():
-    """Lista todos los usuarios del sistema con búsqueda"""
+def listar_usuarios():
+    """Lista todos los usuarios con búsqueda"""
     if not current_user.is_admin():
-        flash('⛔ Acceso denegado.', 'danger')
+        flash('⛔ No tienes permisos.', 'danger')
         return redirect(url_for('core.landing'))
     
-    # Obtener término de búsqueda
     search = request.args.get('search', '').strip()
     
-    # Construir consulta base
     query = Usuario.query
     
-    # Aplicar búsqueda si hay término
+    # BÚSQUEDA SIMPLE Y COMPATIBLE
     if search:
-        search_terms = search.split()
-        conditions = []
-        
-        # Buscar por ID
-        if search.isdigit():
-            conditions.append(Usuario.id == int(search))
-        
-        # Buscar por nombre completo o parcial
-        for term in search_terms:
-            conditions.append(Usuario.nombres.ilike(f'%{term}%'))
-            conditions.append(Usuario.apellidos.ilike(f'%{term}%'))
-        
-        # Buscar por nombre completo (concatenado)
-        conditions.append(db.func.concat(Usuario.nombres, ' ', Usuario.apellidos).ilike(f'%{search}%'))
-        conditions.append(db.func.concat(Usuario.nombres, Usuario.apellidos).ilike(f'%{search}%'))
-        
-        # Buscar por username
-        conditions.append(Usuario.username.ilike(f'%{search}%'))
-        
-        # Buscar por email
-        conditions.append(Usuario.email.ilike(f'%{search}%'))
-        
-        # Buscar por rol
-        conditions.append(Usuario.rol.ilike(f'%{search}%'))
-        
-        # Aplicar todas las condiciones con OR
-        query = query.filter(db.or_(*conditions))
+        search_term = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                Usuario.username.ilike(search_term),
+                Usuario.nombres.ilike(search_term),
+                Usuario.apellidos.ilike(search_term),
+                Usuario.email.ilike(search_term),
+                Usuario.telefono.ilike(search_term),
+                Usuario.ci.ilike(search_term),
+                Usuario.rol.ilike(search_term)
+            )
+        )
     
-    # Ordenar por fecha de registro (más reciente primero)
-    usuarios = query.order_by(Usuario.fecha_registro.desc()).all()
+    usuarios = query.order_by(Usuario.id.desc()).all()
     
     return render_template('admin/usuarios.html', usuarios=usuarios, search=search)
-
-
 # ============================================
 # CREAR USUARIO - Desde el Panel Admin
 # ============================================

@@ -110,21 +110,23 @@ def dashboard():
 
 
 # ============================================
-# LISTAR USUARIOS (PANEL DE ADMIN)
+# LISTAR USUARIOS - Gestión de Usuarios
 # ============================================
 @bp_admin.route('/usuarios')
 @login_required
-def listar_usuarios():
-    """Lista todos los usuarios con búsqueda"""
+def usuarios():
+    """Lista todos los usuarios del sistema con búsqueda"""
     if not current_user.is_admin():
-        flash('⛔ No tienes permisos.', 'danger')
+        flash('⛔ Acceso denegado.', 'danger')
         return redirect(url_for('core.landing'))
     
+    # Obtener término de búsqueda
     search = request.args.get('search', '').strip()
     
+    # Construir consulta base
     query = Usuario.query
     
-    # BÚSQUEDA SIMPLE Y COMPATIBLE
+    # BÚSQUEDA SIMPLE Y COMPATIBLE CON SQLITE
     if search:
         search_term = f'%{search}%'
         query = query.filter(
@@ -139,9 +141,14 @@ def listar_usuarios():
             )
         )
     
-    usuarios = query.order_by(Usuario.id.desc()).all()
+    # Ordenar por fecha de registro (más reciente primero)
+    usuarios = query.order_by(Usuario.fecha_registro.desc()).all()
     
     return render_template('admin/usuarios.html', usuarios=usuarios, search=search)
+
+
+
+
 # ============================================
 # CREAR USUARIO - Desde el Panel Admin
 # ============================================

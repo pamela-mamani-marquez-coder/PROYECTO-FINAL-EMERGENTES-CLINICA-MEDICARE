@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv
+
+# Variables de entorno
+.env
+.flaskenv
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# EXCLUIR BASE DE DATOS DE RESPALDO
+*.backup
+*.bak
+
+# PERMITIR LA BASE DE DATOS PRINCIPAL
+!instance/
+!instance/site.db

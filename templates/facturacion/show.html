@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente morado -->
+                <div class="card-header text-center border-0 py-3 bg-gradient-purple">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-file-invoice text-white fs-5"></i>
+                        <span class="fw-bold text-white fs-6">
+                            Factura
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0 small">
+                        {{ factura.numero_factura }}
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Estado -->
+                    <div class="text-center mb-3">
+                        <span class="badge rounded-pill px-3 py-2 
+                            {% if factura.estado_pago == 'pagado' %}bg-success
+                            {% elif factura.estado_pago == 'pendiente' %}bg-warning text-dark
+                            {% else %}bg-danger{% endif %}">
+                            <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                            {{ factura.estado_pago|upper }}
+                        </span>
+                    </div>
+
+                    <!-- Monto Total -->
+                    <div class="text-center mb-3 p-2 bg-purple-light rounded-3">
+                        <small class="text-muted d-block small">Monto Total</small>
+                        <span class="fw-bold fs-2 text-dark">
+                            Bs. {{ "%.2f"|format(factura.monto_total) }}
+                        </span>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Información en tarjetas pequeñas -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-user-injured me-1"></i>Paciente</small>
+                                <strong class="small">{{ factura.cita.paciente.nombres if factura.cita and factura.cita.paciente else 'N/A' }} 
+                                        {{ factura.cita.paciente.apellidos if factura.cita and factura.cita.paciente else '' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-calendar me-1"></i>Fecha Emisión</small>
+                                <strong class="small">{{ factura.fecha_emision.strftime('%d/%m/%Y %H:%M') if factura.fecha_emision else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-credit-card me-1"></i>Método Pago</small>
+                                <strong class="small">{{ factura.metodo_pago or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-clock me-1"></i>Fecha Pago</small>
+                                <strong class="small">{{ factura.fecha_pago.strftime('%d/%m/%Y %H:%M') if factura.fecha_pago else 'Pendiente' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-hashtag me-1"></i>Cita Asociada</small>
+                                <strong class="small">#{{ factura.cita_id if factura.cita_id else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 mt-2 justify-content-center flex-wrap">
+                        <a href="{{ url_for('factura.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 small">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        <a href="{{ url_for('factura.imprimir', id=factura.id) }}" class="btn btn-sm rounded-pill px-3 small bg-gradient-purple text-white border-0 shadow-sm">
+                            <i class="fas fa-print me-1"></i>Imprimir
+                        </a>
+                        {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                        <a href="{{ url_for('factura.editar', id=factura.id) }}" class="btn btn-warning btn-sm rounded-pill px-3 text-dark small">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        {% endif %}
+                        {% if factura.estado_pago == 'pendiente' and (current_user.is_admin() or current_user.is_recepcionista()) %}
+                        <form method="POST" action="{{ url_for('factura.pagar', id=factura.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 small" onclick="return confirm('¿Registrar pago de esta factura?')">
+                                <i class="fas fa-check me-1"></i>Pagar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-gradient-purple {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+    .bg-purple-light {
+        background-color: #f3e8ff;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    .btn-sm {
+        font-size: 0.8rem !important;
+        padding: 0.35rem 0.9rem !important;
+    }
+    .small {
+        font-size: 0.8rem !important;
+    }
+    .fs-2 {
+        font-size: 1.8rem !important;
+    }
+</style>
+{% endblock %}

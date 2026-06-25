@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-door-open" style="color: #2563eb; margin-right: 10px;"></i>Gestión de Salas
+            </h1>
+            <p style="color: #4a6a8a; margin: 0;">Administración de consultorios y salas</p>
+        </div>
+        <!-- Botón Nueva Sala en AMARILLO -->
+        <a href="{{ url_for('admin.crear_sala') }}" class="btn" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s ease;">
+            <i class="fas fa-plus me-2"></i>Nueva Sala
+        </a>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ url_for('admin.salas') }}" class="d-flex gap-2">
+                <div class="input-group" style="max-width: 500px;">
+                    <span class="input-group-text bg-light border-0" style="border-radius: 50px 0 0 50px;">
+                        <i class="fas fa-search text-primary"></i>
+                    </span>
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Buscar por: número, nombre, ubicación, estado..." 
+                           value="{{ search }}" 
+                           style="border-left: none; border-radius: 0; border-color: #dee2e6;">
+                    <button type="submit" class="btn" style="border-radius: 0 50px 50px 0; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none;">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                {% if search %}
+                <a href="{{ url_for('admin.salas') }}" class="btn btn-outline-secondary" style="border-radius: 50px;">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+                {% endif %}
+            </form>
+            {% if search %}
+            <div class="mt-2">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Buscando: <strong>"{{ search }}"</strong> 
+                    <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 50px; padding: 4px 12px;">{{ salas|length }} resultados</span>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabla de salas -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="width: 50px;" class="text-center">ID</th>
+                            <th>Número</th>
+                            <th>Nombre</th>
+                            <th>Ubicación</th>
+                            <th style="width: 80px; text-align: center;">Capacidad</th>
+                            <th style="width: 140px;">Estado</th>
+                            <th style="width: 160px;" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sala in salas %}
+                        <tr>
+                            <td class="text-center"><strong>{{ sala.id }}</strong></td>
+                            <td><strong>{{ sala.numero }}</strong></td>
+                            <td>{{ sala.nombre or 'N/A' }}</td>
+                            <td>{{ sala.ubicacion or 'N/A' }}</td>
+                            <td class="text-center">{{ sala.capacidad }}</td>
+                            <td>
+                                {% if sala.estado == 'disponible' %}
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="fas fa-check-circle me-1"></i> Disponible
+                                </span>
+                                {% elif sala.estado == 'ocupada' %}
+                                <span class="badge bg-danger rounded-pill px-3 py-2">
+                                    <i class="fas fa-times-circle me-1"></i> Ocupada
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                    <i class="fas fa-tools me-1"></i> Mantenimiento
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a href="{{ url_for('admin.editar_sala', id=sala.id) }}" 
+                                       class="btn btn-sm btn-warning text-dark" 
+                                       style="border-radius: 50px; padding: 4px 10px;"
+                                       title="Editar sala">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('admin.eliminar_sala', id=sala.id) }}" 
+                                          style="display:inline;" 
+                                          onsubmit="return confirm('¿Estás seguro de eliminar la sala {{ sala.numero }}? Esta acción no se puede deshacer.')">
+                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                style="border-radius: 50px; padding: 4px 10px;"
+                                                title="Eliminar sala">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-door-open" style="font-size: 4rem; opacity: 0.2; display: block; margin-bottom: 15px;"></i>
+                                <h5 style="color: #4a6a8a;">
+                                    {% if search %}
+                                    No se encontraron salas para "<strong>{{ search }}</strong>"
+                                    {% else %}
+                                    No hay salas registradas
+                                    {% endif %}
+                                </h5>
+                                <p class="text-muted">
+                                    {% if search %}
+                                    <a href="{{ url_for('admin.salas') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                                        <i class="fas fa-times me-1"></i>Limpiar búsqueda
+                                    </a>
+                                    {% else %}
+                                    Comienza agregando una nueva sala
+                                    {% endif %}
+                                </p>
+                                {% if not search %}
+                                <a href="{{ url_for('admin.crear_sala') }}" class="btn" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); transition: all 0.3s ease;">
+                                    <i class="fas fa-plus me-2"></i>Agregar Sala
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.03);
+    }
+    .badge {
+        font-weight: 500;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .table th {
+        font-weight: 600;
+        color: #0d1b3e;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .table td {
+        font-size: 0.9rem;
+    }
+    .input-group .form-control:focus {
+        border-color: #f59e0b;
+        box-shadow: none;
+    }
+</style>
+{% endblock %}

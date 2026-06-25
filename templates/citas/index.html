@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-calendar-check" style="color: #2563eb; margin-right: 10px;"></i>Citas
+            </h1>
+            <p style="color: #4a6a8a; margin: 0;">Gestión de citas médicas</p>
+        </div>
+        <div class="d-flex gap-2">
+            {% if current_user.is_admin() or current_user.is_recepcionista() or current_user.is_medico() or current_user.is_paciente() %}
+            <a href="{{ url_for('cita.crear') }}" class="btn rounded-pill px-4 py-2 fw-semibold bg-gradient-yellow text-white border-0 shadow-sm" style="font-size: 0.9rem;">
+                <i class="fas fa-plus me-2"></i>Nueva Cita
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ url_for('cita.index') }}" class="d-flex gap-2">
+                <div class="input-group" style="max-width: 500px;">
+                    <span class="input-group-text bg-light border-0" style="border-radius: 50px 0 0 50px;">
+                        <i class="fas fa-search text-primary"></i>
+                    </span>
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Buscar por: ID, paciente, CI, médico, motivo o estado..." 
+                           value="{{ search }}" 
+                           style="border-left: none; border-radius: 0; border-color: #dee2e6;">
+                    <button type="submit" class="btn" style="border-radius: 0 50px 50px 0; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none;">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                {% if search %}
+                <a href="{{ url_for('cita.index') }}" class="btn btn-outline-secondary" style="border-radius: 50px;">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+                {% endif %}
+            </form>
+            {% if search %}
+            <div class="mt-2">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    Buscando: <strong>"{{ search }}"</strong> 
+                    <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 50px; padding: 4px 12px;">{{ citas|length }} resultados</span>
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabla de citas -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="width: 50px;" class="text-center">ID</th>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th style="width: 120px;">Fecha/Hora</th>
+                            <th>Motivo</th>
+                            <th style="width: 120px;">Estado</th>
+                            <th style="width: 180px;" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas %}
+                        <tr>
+                            <td class="text-center"><strong>{{ cita.id }}</strong></td>
+                            <td>
+                                <strong>{{ cita.paciente.nombres if cita.paciente else 'N/A' }} 
+                                      {{ cita.paciente.apellidos if cita.paciente else '' }}</strong>
+                            </td>
+                            <td>{{ cita.medico.nombre_completo() if cita.medico else 'N/A' }}</td>
+                            <td>
+                                <span class="fw-semibold">
+                                    {{ cita.fecha_hora.strftime('%d/%m/%Y') if cita.fecha_hora else 'N/A' }}
+                                </span>
+                                <br>
+                                <small class="text-muted">
+                                    {{ cita.fecha_hora.strftime('%H:%M') if cita.fecha_hora else '' }}
+                                </small>
+                            </td>
+                            <td>{{ cita.motivo or 'Sin motivo' }}</td>
+                            <td>
+                                {% if cita.estado == 'confirmada' %}
+                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                    <i class="fas fa-check-circle me-1"></i> CONFIRMADA
+                                </span>
+                                {% elif cita.estado == 'pendiente' %}
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                    <i class="fas fa-clock me-1"></i> PENDIENTE
+                                </span>
+                                {% elif cita.estado == 'completada' %}
+                                <span class="badge bg-info text-white rounded-pill px-3 py-2">
+                                    <i class="fas fa-check-double me-1"></i> COMPLETADA
+                                </span>
+                                {% elif cita.estado == 'cancelada' %}
+                                <span class="badge bg-danger rounded-pill px-3 py-2">
+                                    <i class="fas fa-times-circle me-1"></i> CANCELADA
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                    <i class="fas fa-circle me-1"></i> {{ cita.estado|upper }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a href="{{ url_for('cita.show', id=cita.id) }}" 
+                                       class="btn btn-sm btn-info text-white" 
+                                       style="border-radius: 50px; padding: 4px 10px;"
+                                       title="Ver detalle">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                                    <a href="{{ url_for('cita.editar', id=cita.id) }}" 
+                                       class="btn btn-sm btn-primary" 
+                                       style="border-radius: 50px; padding: 4px 10px;"
+                                       title="Editar cita">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if cita.estado == 'pendiente' %}
+                                        {% if current_user.is_admin() or current_user.is_recepcionista() or current_user.is_medico() %}
+                                        <a href="{{ url_for('cita.cancelar', id=cita.id) }}" 
+                                           class="btn btn-sm btn-danger" 
+                                           style="border-radius: 50px; padding: 4px 10px;"
+                                           onclick="return confirm('¿Estás seguro de cancelar esta cita?')"
+                                           title="Cancelar cita">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if cita.estado == 'pendiente' and current_user.is_medico() %}
+                                    <form method="POST" action="{{ url_for('cita.completar', id=cita.id) }}" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-success" 
+                                                style="border-radius: 50px; padding: 4px 10px;"
+                                                onclick="return confirm('¿Marcar esta cita como completada?')"
+                                                title="Completar cita">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    {% if cita.estado == 'completada' and (current_user.is_admin() or current_user.is_medico()) %}
+                                    <a href="{{ url_for('historial.crear', cita_id=cita.id) }}" 
+                                       class="btn btn-sm btn-success" 
+                                       style="border-radius: 50px; padding: 4px 10px;"
+                                       title="Crear historial">
+                                        <i class="fas fa-file-medical"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-calendar-check" style="font-size: 4rem; opacity: 0.2; display: block; margin-bottom: 15px;"></i>
+                                <h5 style="color: #4a6a8a;">
+                                    {% if search %}
+                                    No se encontraron citas para "<strong>{{ search }}</strong>"
+                                    {% else %}
+                                    No hay citas registradas
+                                    {% endif %}
+                                </h5>
+                                <p class="text-muted">
+                                    {% if search %}
+                                    <a href="{{ url_for('cita.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                                        <i class="fas fa-times me-1"></i>Limpiar búsqueda
+                                    </a>
+                                    {% else %}
+                                    Comienza agendando una nueva cita
+                                    {% endif %}
+                                </p>
+                                {% if not search and (current_user.is_admin() or current_user.is_recepcionista() or current_user.is_medico() or current_user.is_paciente()) %}
+                                <a href="{{ url_for('cita.crear') }}" class="btn rounded-pill px-4 py-2 fw-semibold bg-gradient-yellow text-white border-0 shadow-sm" style="font-size: 0.9rem;">
+                                    <i class="fas fa-plus me-2"></i>Agendar Cita
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.03);
+    }
+    .badge {
+        font-weight: 500;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .bg-gradient-yellow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .input-group .form-control:focus {
+        border-color: #f59e0b;
+        box-shadow: none;
+    }
+    .table th {
+        font-weight: 600;
+        color: #0d1b3e;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .table td {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare - {% block title %}Clínica Integral{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== VARIABLES ========== */
+        :root {
+            --primary-dark: #0d1b3e;
+            --primary-mid: #1a3a7a;
+            --primary-blue: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-gradient: linear-gradient(135deg, #0d1b3e 0%, #1a3a7a 50%, #2563eb 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-light: #ffffff;
+            --text-dark: #0d1b3e;
+            --shadow-soft: 0 8px 32px rgba(13, 27, 62, 0.15);
+            --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4ff;
+            color: var(--text-dark);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 50%);
+        }
+
+        /* ========== NAVBAR ========== */
+        .navbar-custom {
+            background: var(--primary-gradient);
+            padding: 14px 0;
+            box-shadow: 0 4px 30px rgba(13, 27, 62, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: white !important;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-custom .navbar-brand i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+            color: #60a5fa;
+        }
+
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .navbar-custom .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #60a5fa;
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .navbar-custom .nav-link:hover::after {
+            width: 60%;
+        }
+
+        .btn-login {
+            background: rgba(255,255,255,0.15);
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 25px !important;
+            border-radius: 50px !important;
+            transition: var(--transition);
+        }
+
+        .btn-login:hover {
+            background: white !important;
+            color: var(--primary-dark) !important;
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            color: white !important;
+            border: none;
+            padding: 8px 25px !important;
+            border-radius: 50px !important;
+            transition: var(--transition);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        /* ========== DROPDOWN USUARIO ========== */
+        .user-dropdown .dropdown-toggle {
+            color: white !important;
+            padding: 6px 16px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .user-dropdown .dropdown-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .dropdown-menu-custom {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 8px;
+            min-width: 220px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-menu-custom .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .dropdown-menu-custom .dropdown-item:hover {
+            background: #e8edf9;
+            color: var(--primary-dark);
+        }
+
+        /* ========== TARJETAS ========== */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-glass);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .card-glass:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(13, 27, 62, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* ========== FOOTER ========== */
+        .footer-custom {
+            background: var(--primary-gradient);
+            color: rgba(255,255,255,0.9);
+            padding: 60px 0 30px 0;
+            position: relative;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .footer-custom h5 {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-custom a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-custom a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-custom .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: var(--transition);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-custom .social-links a:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== FLASH MESSAGES ========== */
+        .alert-glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            padding: 16px 24px;
+            box-shadow: var(--shadow-glass);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .navbar-custom .navbar-brand {
+                font-size: 1.3rem;
+            }
+            
+            .btn-login, .btn-register {
+                padding: 6px 20px !important;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('core.landing') }}">
+                <i class="fas fa-heartbeat"></i>MediCare
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.landing') }}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.servicios') }}">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.about') }}">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('core.contacto') }}">Contacto</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <!-- ===== MENÚ PARA ADMINISTRADOR ===== -->
+                        {% if current_user.is_admin() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-cogs me-1"></i> Administración
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom">
+                                <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-chart-line me-2"></i>Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin.usuarios') }}">
+                                    <i class="fas fa-users-cog me-2"></i>Usuarios
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('medico.index') }}">
+                                    <i class="fas fa-user-md me-2"></i>Médicos
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('paciente.index') }}">
+                                    <i class="fas fa-user-injured me-2"></i>Pacientes
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cita.index') }}">
+                                    <i class="fas fa-calendar-check me-2"></i>Citas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('historial.index') }}">
+                                    <i class="fas fa-history me-2"></i>Historial
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('factura.index') }}">
+                                    <i class="fas fa-file-invoice-dollar me-2"></i>Facturación
+                                <li><a class="dropdown-item" href="{{ url_for('admin.salas') }}">
+                                    <i class="fas fa-door-open me-2"></i>Salas
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- ===== MENÚ PARA MÉDICO ===== -->
+                        {% elif current_user.is_medico() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="medicoDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-stethoscope me-1"></i> Médico
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom">
+                                <li><a class="dropdown-item" href="{{ url_for('medico.dashboard') }}">
+                                    <i class="fas fa-chart-simple me-2"></i>Mi Panel
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cita.index') }}">
+                                    <i class="fas fa-calendar-check me-2"></i>Mis Citas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('paciente.index') }}">
+                                    <i class="fas fa-user-injured me-2"></i>Pacientes
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('historial.index') }}">
+                                    <i class="fas fa-history me-2"></i>Historial
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- ===== MENÚ PARA RECEPCIONISTA ===== -->
+                        {% elif current_user.is_recepcionista() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="recepcionistaDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-tie me-1"></i> Recepción
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom">
+                                <li><a class="dropdown-item" href="{{ url_for('recepcionista.dashboard') }}">
+                                    <i class="fas fa-chart-simple me-2"></i>Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('paciente.index') }}">
+                                    <i class="fas fa-user-injured me-2"></i>Pacientes
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cita.index') }}">
+                                    <i class="fas fa-calendar-check me-2"></i>Citas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('factura.index') }}">
+                                    <i class="fas fa-file-invoice-dollar me-2"></i>Facturación
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('historial.index') }}">
+                                    <i class="fas fa-history me-2"></i>Historial
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- ===== MENÚ PARA PACIENTE ===== -->
+                        {% elif current_user.is_paciente() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="pacienteDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Mi Cuenta
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom">
+                                <li><a class="dropdown-item" href="{{ url_for('paciente.dashboard') }}">
+                                    <i class="fas fa-id-card me-2"></i>Menú
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cita.index') }}">
+                                    <i class="fas fa-calendar-check me-2"></i>Mis Citas
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('historial.index') }}">
+                                    <i class="fas fa-history me-2"></i>Mi Historial
+                                </a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                        
+                        <!-- ===== MENÚ COMÚN: PERFIL Y CERRAR SESIÓN ===== -->
+                        <li class="nav-item dropdown user-dropdown">
+                            <a class="nav-link dropdown-toggle text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                {{ current_user.nombres }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.perfil') }}">
+                                    <i class="fas fa-id-card me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn-login" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <a class="nav-link btn-register" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== FLASH MESSAGES ===== -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-glass alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="fas {% if category == 'success' %}fa-check-circle text-success{% elif category == 'danger' %}fa-exclamation-circle text-danger{% elif category == 'warning' %}fa-exclamation-triangle text-warning{% else %}fa-info-circle text-info{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-heartbeat me-2"></i>MediCare</h5>
+                    <p style="opacity: 0.8; line-height: 1.8; position: relative; z-index: 1;">Tu salud en manos de expertos. Tecnología moderna, atención humana y compromiso total con tu bienestar.</p>
+                    <div class="social-links mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('core.landing') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('core.servicios') }}">Servicios</a></li>
+                        <li><a href="{{ url_for('core.about') }}">Nosotros</a></li>
+                        <li><a href="{{ url_for('core.contacto') }}">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Horarios</h5>
+                    <ul class="list-unstyled" style="opacity: 0.8;">
+                        <li><i class="fas fa-clock me-2"></i>Lun-Vie: 08:00 - 18:00</li>
+                        <li><i class="fas fa-clock me-2"></i>Sábados: 09:00 - 13:00</li>
+                        <li><i class="fas fa-ambulance me-2"></i>Emergencias: 24/7</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contacto</h5>
+                    <ul class="list-unstyled" style="opacity: 0.8;">
+                        <li><i class="fas fa-phone me-2"></i>(+591) 123 456 78</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@medicare.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Calle Principal #123</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2026 MediCare. Elaborado por Univ. Pamela Mamani Marquez y Bethy Mercedes Cari Paco .</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

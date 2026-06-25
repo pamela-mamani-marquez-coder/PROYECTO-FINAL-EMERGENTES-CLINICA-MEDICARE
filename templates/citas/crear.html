@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-calendar-plus text-white" style="font-size: 1.2rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Nueva Cita
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.8rem;">
+                        {% if current_user.is_paciente() %}
+                        Agenda tu cita médica
+                        {% else %}
+                        Complete los datos para agendar una nueva cita
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('cita.crear') }}" id="formCita">
+                        <!-- Paciente -->
+                        {% if current_user.is_paciente() %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user-injured text-warning me-1"></i> Paciente
+                            </label>
+                            <div class="p-2 bg-light rounded-3">
+                                <strong>{{ paciente.nombres }} {{ paciente.apellidos }}</strong>
+                                <span class="text-muted ms-2">({{ paciente.ci }})</span>
+                            </div>
+                            <input type="hidden" name="paciente_id" value="{{ paciente.id }}">
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <label for="paciente_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user-injured text-warning me-1"></i> Paciente
+                            </label>
+                            <select class="form-select" id="paciente_id" name="paciente_id" required>
+                                <option value="">Seleccionar paciente</option>
+                                {% for p in pacientes %}
+                                <option value="{{ p.id }}">{{ p.nombres }} {{ p.apellidos }} ({{ p.ci }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <!-- Médico -->
+                        <div class="mb-3">
+                            <label for="medico_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user-md text-warning me-1"></i> Médico
+                            </label>
+                            <select class="form-select" id="medico_id" name="medico_id" required>
+                                <option value="">Seleccionar médico</option>
+                                {% for medico in medicos %}
+                                <option value="{{ medico.id }}">{{ medico.nombre }} {{ medico.apellidos }} - {{ medico.especialidad.nombre if medico.especialidad else 'Sin especialidad' }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Sala (solo para admin/recepcionista) -->
+                        {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                        <div class="mb-3">
+                            <label for="sala_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-door-open text-warning me-1"></i> Sala
+                            </label>
+                            <select class="form-select" id="sala_id" name="sala_id" required>
+                                <option value="">Seleccionar sala</option>
+                                {% for sala in salas %}
+                                <option value="{{ sala.id }}">Sala {{ sala.numero }} - {{ sala.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <input type="hidden" name="sala_id" id="sala_id" value="{{ salas[0].id if salas else '' }}">
+                        {% endif %}
+
+                        <!-- Fecha -->
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-calendar text-warning me-1"></i> Fecha
+                            </label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required min="{{ datetime.now().strftime('%Y-%m-%d') }}">
+                        </div>
+
+                        <!-- Horarios Disponibles -->
+                        <div class="mb-3" id="horario-container" style="display: none;">
+                            <label class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-clock text-warning me-1"></i> Horario Disponible
+                            </label>
+                            <div id="horarios-disponibles" class="d-flex flex-wrap gap-2">
+                                <p class="text-muted" id="cargando-horarios">Seleccione un médico y una fecha</p>
+                            </div>
+                            
+                            <input type="hidden" name="fecha_hora" id="fecha_hora">
+                        </div>
+
+                        <!-- Motivo -->
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-comment text-warning me-1"></i> Motivo
+                            </label>
+                            <textarea class="form-control" id="motivo" name="motivo" rows="2" placeholder="Describa el motivo de la consulta..."></textarea>
+                        </div>
+
+                        <!-- Estado (solo admin y recepcionista) -->
+                        {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                        <div class="mb-3">
+                            <label for="estado" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-circle text-warning me-1"></i> Estado
+                            </label>
+                            <select class="form-select" id="estado" name="estado">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="confirmada">Confirmada</option>
+                            </select>
+                        </div>
+                        {% else %}
+                        <input type="hidden" name="estado" value="pendiente">
+                        {% endif %}
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn rounded-pill py-2 fw-semibold bg-gradient-yellow text-white border-0 shadow-sm" id="btnAgendar" disabled>
+                                <i class="fas fa-save me-1"></i>Agendar Cita
+                            </button>
+                            <a href="{{ url_for('cita.index') }}" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Elementos del DOM
+    const medicoSelect = document.getElementById('medico_id');
+    const fechaInput = document.getElementById('fecha');
+    const horarioContainer = document.getElementById('horario-container');
+    const horariosDiv = document.getElementById('horarios-disponibles');
+    const btnAgendar = document.getElementById('btnAgendar');
+    const fechaHoraInput = document.getElementById('fecha_hora');
+
+    // Función para cargar horarios
+    function cargarHorarios() {
+        const medicoId = medicoSelect.value;
+        const fecha = fechaInput.value;
+
+        if (!medicoId || !fecha) {
+            horarioContainer.style.display = 'none';
+            btnAgendar.disabled = true;
+            fechaHoraInput.value = '';
+            return;
+        }
+
+        horarioContainer.style.display = 'block';
+        horariosDiv.innerHTML = '<p class="text-muted">Cargando horarios disponibles...</p>';
+        btnAgendar.disabled = true;
+        fechaHoraInput.value = '';
+
+        fetch(`/citas/horarios_disponibles?medico_id=${medicoId}&fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    horariosDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                if (data.horarios.length === 0) {
+                    horariosDiv.innerHTML = '<p class="text-warning">No hay horarios disponibles para este médico en esta fecha.</p>';
+                    return;
+                }
+
+                horariosDiv.innerHTML = '';
+                data.horarios.forEach(horario => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-primary btn-sm rounded-pill';
+                    btn.textContent = horario.hora;
+                    btn.dataset.timestamp = horario.timestamp;
+                    btn.onclick = function() {
+                        // Deseleccionar todos
+                        document.querySelectorAll('#horarios-disponibles .btn').forEach(b => {
+                            b.classList.remove('btn-primary', 'text-white');
+                            b.classList.add('btn-outline-primary');
+                        });
+                        // Seleccionar este
+                        this.classList.remove('btn-outline-primary');
+                        this.classList.add('btn-primary', 'text-white');
+                        
+                        // Guardar el timestamp completo
+                        const timestamp = this.dataset.timestamp;
+                        fechaHoraInput.value = timestamp;
+                        
+                        // Habilitar botón
+                        btnAgendar.disabled = false;
+                    };
+                    horariosDiv.appendChild(btn);
+                });
+            })
+            .catch(error => {
+                horariosDiv.innerHTML = `<p class="text-danger">Error al cargar horarios: ${error}</p>`;
+            });
+    }
+
+    // Eventos
+    medicoSelect.addEventListener('change', cargarHorarios);
+    fechaInput.addEventListener('change', cargarHorarios);
+
+    // Validación antes de enviar
+    document.getElementById('formCita').addEventListener('submit', function(e) {
+        const fechaHora = document.getElementById('fecha_hora').value;
+        
+        if (!fechaHora) {
+            e.preventDefault();
+            alert('⚠️ Por favor, selecciona un horario disponible.');
+            return false;
+        }
+        
+        // Verificar formato ISO (YYYY-MM-DDTHH:MM:SS)
+        if (!fechaHora.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
+            e.preventDefault();
+            alert('⚠️ Error en el formato de fecha. Por favor, selecciona un horario nuevamente.');
+            console.error('Formato incorrecto:', fechaHora);
+            return false;
+        }
+        
+        console.log('✅ Enviando cita con fecha_hora:', fechaHora);
+        return true;
+    });
+
+    // Cargar horarios iniciales si ya hay datos
+    document.addEventListener('DOMContentLoaded', function() {
+        if (medicoSelect.value && fechaInput.value) {
+            cargarHorarios();
+        }
+    });
+</script>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .bg-gradient-yellow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .form-control, .form-select {
+        font-size: 0.95rem !important;
+        padding: 0.6rem 0.9rem !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    #horarios-disponibles .btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    #horarios-disponibles .btn-outline-primary {
+        border-color: #f59e0b;
+        color: #f59e0b;
+    }
+    #horarios-disponibles .btn-outline-primary:hover {
+        background: #f59e0b;
+        color: white;
+    }
+    #horarios-disponibles .btn-primary {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: white;
+    }
+    #horarios-disponibles .btn-primary:hover {
+        background: #d97706;
+        border-color: #d97706;
+    }
+</style>
+{% endblock %}

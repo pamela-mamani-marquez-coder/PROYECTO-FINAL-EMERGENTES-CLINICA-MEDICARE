@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- ===== TÍTULO Y SALUDO ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-stethoscope" style="color: #2563eb; margin-right: 10px;"></i>Panel del Médico
+            </h1>
+            <p style="color: #4a6a8a; margin: 0;">Bienvenido, {{ medico.nombre_completo() }}</p>
+            <small class="text-muted">
+                <i class="fas fa-calendar-alt me-1"></i>
+                {{ hoy.strftime('%A, %d de %B de %Y') }}
+            </small>
+        </div>
+        <span class="badge" style="background: linear-gradient(135deg, #28a745, #1e7e34); color: white; padding: 8px 20px; border-radius: 50px;">
+            <i class="fas fa-user-md me-1"></i> {{ medico.especialidad.nombre if medico.especialidad else 'Sin especialidad' }}
+        </span>
+    </div>
+
+    <!-- ===== BOTONES DE ACCIÓN ===== -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <a href="{{ url_for('cita.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white;">
+                    <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                    <h6 class="fw-bold mb-0">Ver Mis Citas</h6>
+                    <small style="opacity: 0.8;">Gestiona tu agenda</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('paciente.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #28a745, #1e7e34); color: white;">
+                    <i class="fas fa-user-injured fa-2x mb-2"></i>
+                    <h6 class="fw-bold mb-0">Ver Pacientes</h6>
+                    <small style="opacity: 0.8;">Consulta tus pacientes</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('historial.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #17a2b8, #117a8b); color: white;">
+                    <i class="fas fa-history fa-2x mb-2"></i>
+                    <h6 class="fw-bold mb-0">Historial Clínico</h6>
+                    <small style="opacity: 0.8;">Registros médicos</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('cita.index', search='pendiente') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #dc3545, #b02a37); color: white;">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h6 class="fw-bold mb-0">Pendientes</h6>
+                    <small style="opacity: 0.8;">Citas pendientes</small>
+                    {% if citas_pendientes > 0 %}
+                    <span class="badge bg-warning text-dark mt-1">{{ citas_pendientes }}</span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ESTADÍSTICAS RÁPIDAS ===== -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px; background: #f8f9fa;">
+                <h5 class="fw-bold mb-0" style="color: #0d6efd;">{{ citas_hoy|length }}</h5>
+                <small class="text-muted">Citas Hoy</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px; background: #f8f9fa;">
+                <h5 class="fw-bold mb-0" style="color: #ffc107;">{{ citas_semana }}</h5>
+                <small class="text-muted">Citas Semana</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px; background: #f8f9fa;">
+                <h5 class="fw-bold mb-0" style="color: #28a745;">{{ total_pacientes }}</h5>
+                <small class="text-muted">Pacientes</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px; background: #f8f9fa;">
+                <h5 class="fw-bold mb-0" style="color: #dc3545;">{{ citas_pendientes }}</h5>
+                <small class="text-muted">Pendientes</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CITAS DE HOY ===== -->
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+        <div class="card-header border-0" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; border-radius: 16px 16px 0 0; padding: 12px 20px;">
+            <i class="fas fa-calendar-check me-2"></i> Citas de Hoy
+            <span class="badge bg-light text-dark ms-2">{{ citas_hoy|length }}</span>
+        </div>
+        <div class="card-body p-3">
+            {% if citas_hoy %}
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cita in citas_hoy %}
+                        <tr>
+                            <td><strong>{{ cita.fecha_hora.strftime('%H:%M') }}</strong></td>
+                            <td>{{ cita.paciente.nombre_completo() if cita.paciente else 'N/A' }}</td>
+                            <td>{{ cita.motivo or 'Sin motivo' }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if cita.estado == 'confirmada' %}bg-success
+                                    {% elif cita.estado == 'pendiente' %}bg-warning text-dark
+                                    {% elif cita.estado == 'completada' %}bg-info text-white
+                                    {% else %}bg-danger{% endif %} rounded-pill">
+                                    {{ cita.estado|upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('cita.show', id=cita.id) }}" class="btn btn-sm btn-info text-white" style="border-radius: 50px; padding: 2px 10px;">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if cita.estado == 'pendiente' %}
+                                <a href="{{ url_for('cita.completar', id=cita.id) }}" 
+                                   class="btn btn-sm btn-success" style="border-radius: 50px; padding: 2px 10px;"
+                                   onclick="return confirm('¿Marcar esta cita como completada?')">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-calendar-alt" style="font-size: 3rem; opacity: 0.2; display: block; margin-bottom: 10px;"></i>
+                <p class="text-muted mb-0">No tienes citas programadas para hoy.</p>
+                <a href="{{ url_for('cita.crear') }}" class="btn btn-primary btn-sm mt-2">
+                    <i class="fas fa-plus me-1"></i>Agendar Cita
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ===== PRÓXIMAS CITAS Y ÚLTIMOS PACIENTES ===== -->
+    <div class="row g-3 mt-3">
+        <!-- Próximas Citas -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header border-0" style="background: linear-gradient(135deg, #17a2b8, #117a8b); color: white; border-radius: 16px 16px 0 0; padding: 12px 20px;">
+                    <i class="fas fa-calendar-week me-2"></i> Próximas Citas (7 días)
+                    <span class="badge bg-light text-dark ms-2">{{ citas_proximas|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if citas_proximas %}
+                    <div class="list-group list-group-flush">
+                        {% for cita in citas_proximas[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ cita.paciente.nombre_completo() if cita.paciente else 'N/A' }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ cita.fecha_hora.strftime('%d/%m %H:%M') }}
+                                    {% if cita.motivo %}
+                                    - {{ cita.motivo[:30] }}{% if cita.motivo|length > 30 %}...{% endif %}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <span class="badge bg-warning text-dark">{{ cita.estado }}</span>
+                        </div>
+                        {% endfor %}
+                        {% if citas_proximas|length > 5 %}
+                        <div class="list-group-item text-center">
+                            <a href="{{ url_for('cita.index') }}" class="text-muted small">
+                                Ver todas ({{ citas_proximas|length }})
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-alt text-muted" style="font-size: 2rem; opacity: 0.2; display: block; margin-bottom: 5px;"></i>
+                        <p class="text-muted mb-0">No hay citas programadas para los próximos 7 días.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Pacientes -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header border-0" style="background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border-radius: 16px 16px 0 0; padding: 12px 20px;">
+                    <i class="fas fa-users me-2"></i> Últimos Pacientes Atendidos
+                </div>
+                <div class="card-body p-0">
+                    {% if ultimos_pacientes %}
+                    <div class="list-group list-group-flush">
+                        {% for paciente, cita in ultimos_pacientes %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ paciente.nombre_completo() }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                            <span class="badge bg-success">Atendido</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-injured text-muted" style="font-size: 2rem; opacity: 0.2; display: block; margin-bottom: 5px;"></i>
+                        <p class="text-muted mb-0">Aún no has atendido pacientes.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important;
+    }
+    .table-sm td, .table-sm th {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    .btn-sm {
+        padding: 0.15rem 0.5rem !important;
+        font-size: 0.7rem !important;
+    }
+    .list-group-item {
+        border-color: rgba(0,0,0,0.05);
+        padding: 0.75rem 1.25rem;
+    }
+    .list-group-item:hover {
+        background: rgba(5, 150, 105, 0.03);
+    }
+    .badge {
+        font-weight: 500;
+        padding: 0.35rem 0.75rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente naranja -->
+                <div class="card-header text-center border-0 py-2" style="background: linear-gradient(135deg, #ea580c, #c2410c);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-injured text-white" style="font-size: 1rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 0.95rem;">
+                            Perfil del Paciente
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-3">
+                    <!-- Nombre y CI -->
+                    <div class="text-center mb-2">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-user" style="font-size: 1.8rem; color: #ea580c;"></i>
+                        </div>
+                        <h6 class="fw-bold mt-2 mb-0">{{ paciente.nombres }} {{ paciente.apellidos }}</h6>
+                        <span class="badge bg-warning text-dark rounded-pill px-3 py-1" style="font-size: 0.65rem;">
+                            <i class="fas fa-id-card me-1"></i> CI: {{ paciente.ci }}
+                        </span>
+                    </div>
+
+                    <hr class="my-2">
+
+                    <!-- Información en grid compacto -->
+                    <div class="row g-1">
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-calendar me-1"></i>Fecha Nacimiento</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.fecha_nacimiento.strftime('%d/%m/%Y') if paciente.fecha_nacimiento else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-venus-mars me-1"></i>Género</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.genero or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-phone me-1"></i>Teléfono</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.telefono or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-envelope me-1"></i>Email</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.email or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-map-marker-alt me-1"></i>Dirección</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.direccion or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-shield-alt me-1"></i>Seguro</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.seguro_medico or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-1 bg-light rounded-2">
+                                <small class="text-muted d-block" style="font-size: 0.55rem;"><i class="fas fa-allergies me-1"></i>Alergias</small>
+                                <strong style="font-size: 0.7rem;">{{ paciente.alergias or 'Ninguna' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-2">
+
+                    <!-- Botones compactos -->
+                    <div class="d-flex gap-1 mt-1 justify-content-center">
+                        <a href="{{ url_for('paciente.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3" style="font-size: 0.65rem;">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                        <a href="{{ url_for('paciente.editar', id=paciente.id) }}" class="btn btn-sm rounded-pill px-3" style="font-size: 0.65rem; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; border: none;">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-2 {
+        border-radius: 0.3rem;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .btn-sm {
+        padding: 0.2rem 0.6rem !important;
+        font-size: 0.65rem !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

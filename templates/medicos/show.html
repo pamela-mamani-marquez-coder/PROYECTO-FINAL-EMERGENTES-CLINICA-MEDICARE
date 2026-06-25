@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente verde -->
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #059669, #047857);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-md text-white" style="font-size: 1.3rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Detalle del Médico
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Nombre y especialidad -->
+                    <div class="text-center mb-3">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 70px; height: 70px;">
+                            <i class="fas fa-user-md text-success" style="font-size: 2rem;"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mt-2 mb-0">{{ medico.nombre_completo() }}</h5>
+                        <span class="badge bg-success text-white rounded-pill px-3 py-1 mt-1" style="font-size: 0.75rem;">
+                            <i class="fas fa-stethoscope me-1"></i>{{ medico.especialidad.nombre if medico.especialidad else 'Sin especialidad' }}
+                        </span>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Información en tarjetas pequeñas -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-door-open me-1"></i>Consultorio</small>
+                                <strong style="font-size: 0.9rem;">{{ medico.consultorio or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-clock me-1"></i>Horario</small>
+                                <strong style="font-size: 0.9rem;">{{ medico.horario_atencion or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-phone me-1"></i>Teléfono</small>
+                                <strong style="font-size: 0.9rem;">{{ medico.telefono or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-envelope me-1"></i>Email</small>
+                                <strong style="font-size: 0.9rem;">{{ medico.email or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-user-circle me-1"></i>Usuario</small>
+                                <strong style="font-size: 0.9rem;">{{ medico.usuario.username if medico.usuario else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                        <a href="{{ url_for('medico.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-4" style="font-size: 0.85rem;">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        {% if current_user.is_admin() %}
+                        <a href="{{ url_for('medico.editar', id=medico.id) }}" class="btn btn-success btn-sm rounded-pill px-4" style="font-size: 0.85rem; background: linear-gradient(135deg, #059669, #047857); border: none;">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

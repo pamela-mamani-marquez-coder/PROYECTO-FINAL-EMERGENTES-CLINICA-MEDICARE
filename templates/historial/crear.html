@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: white;">
+                <!-- Header con gradiente rosado -->
+                <div class="card-header text-center border-0" style="background: linear-gradient(135deg, #ec4899, #db2777); padding: 18px 20px;">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-file-medical" style="font-size: 1.4rem; color: white;"></i>
+                        <span style="font-weight: 700; font-size: 1.2rem; color: white; letter-spacing: -0.3px;">
+                            Registrar Historial Clínico
+                        </span>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.85); margin: 3px 0 0 0; font-size: 0.8rem;">
+                        Cita #{{ cita.id }} - {{ cita.paciente.nombres if cita.paciente else '' }} {{ cita.paciente.apellidos if cita.paciente else '' }}
+                    </p>
+                </div>
+
+                <!-- Cuerpo del formulario -->
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('historial.crear', cita_id=cita.id) }}">
+                        <!-- Diagnóstico -->
+                        <div class="mt-2">
+                            <label for="diagnostico" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-stethoscope" style="color: #ec4899; margin-right: 6px;"></i> Diagnóstico
+                            </label>
+                            <textarea class="form-control form-control-sm" id="diagnostico" name="diagnostico" 
+                                      rows="2" placeholder="Ej: Infección respiratoria aguda" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #fbcfe8;"></textarea>
+                        </div>
+
+                        <!-- Síntomas -->
+                        <div class="mt-2">
+                            <label for="sintomas" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-head-side-virus" style="color: #ec4899; margin-right: 6px;"></i> Síntomas
+                            </label>
+                            <textarea class="form-control form-control-sm" id="sintomas" name="sintomas" 
+                                      rows="2" placeholder="Ej: Tos, fiebre, dolor de garganta" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #fbcfe8;"></textarea>
+                        </div>
+
+                        <!-- Tratamiento -->
+                        <div class="mt-2">
+                            <label for="tratamiento" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-pills" style="color: #ec4899; margin-right: 6px;"></i> Tratamiento
+                            </label>
+                            <textarea class="form-control form-control-sm" id="tratamiento" name="tratamiento" 
+                                      rows="2" placeholder="Ej: Reposo, hidratación, medicamentos" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #fbcfe8;"></textarea>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="mt-2">
+                            <label for="observaciones" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-comment" style="color: #ec4899; margin-right: 6px;"></i> Observaciones
+                            </label>
+                            <textarea class="form-control form-control-sm" id="observaciones" name="observaciones" 
+                                      rows="2" placeholder="Observaciones adicionales" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #fbcfe8;"></textarea>
+                        </div>
+
+                        <hr style="border-color: #fbcfe8;">
+
+                        <!-- Recetas -->
+                        <h6 class="fw-semibold mb-2" style="color: #0d1b3e; font-size: 0.9rem;">
+                            <i class="fas fa-prescription" style="color: #ec4899; margin-right: 6px;"></i> Recetas
+                        </h6>
+                        <div id="recetas-container">
+                            <div class="receta-item row g-1 mb-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" name="medicamento[]" placeholder="Medicamento" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control form-control-sm" name="dosis[]" placeholder="Dosis" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control form-control-sm" name="duracion[]" placeholder="Duración" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control form-control-sm" name="indicaciones[]" placeholder="Indicaciones" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm" style="border-radius: 50px; padding: 2px 8px; font-size: 0.8rem;" onclick="eliminarReceta(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm" style="border-radius: 50px; padding: 4px 16px; font-size: 0.8rem; background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; margin-top: 5px;" onclick="agregarReceta()">
+                            <i class="fas fa-plus me-1"></i>Agregar Medicamento
+                        </button>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn" style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Guardar Historial
+                            </button>
+                            <a href="{{ url_for('historial.index') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function agregarReceta() {
+    const container = document.getElementById('recetas-container');
+    const nuevoItem = document.createElement('div');
+    nuevoItem.className = 'receta-item row g-1 mb-2';
+    nuevoItem.innerHTML = `
+        <div class="col-md-4">
+            <input type="text" class="form-control form-control-sm" name="medicamento[]" placeholder="Medicamento" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm" name="dosis[]" placeholder="Dosis" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control form-control-sm" name="duracion[]" placeholder="Duración" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control form-control-sm" name="indicaciones[]" placeholder="Indicaciones" style="border-radius: 6px; border: 1px solid #fbcfe8;">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger btn-sm" style="border-radius: 50px; padding: 2px 8px; font-size: 0.8rem;" onclick="eliminarReceta(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(nuevoItem);
+}
+
+function eliminarReceta(boton) {
+    const item = boton.closest('.receta-item');
+    if (document.querySelectorAll('.receta-item').length > 1) {
+        item.remove();
+    } else {
+        alert('Debe haber al menos una receta.');
+    }
+}
+</script>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #ec4899;
+        box-shadow: 0 0 0 0.15rem rgba(236, 72, 153, 0.2);
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    hr {
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}

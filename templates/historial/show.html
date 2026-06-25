@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente rosado -->
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-file-medical text-white" style="font-size: 1.3rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Historial Clínico
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.8rem;">
+                        Registro #{{ historial.id }}
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Información del paciente y médico -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-user-injured me-1"></i>Paciente</small>
+                                <strong style="font-size: 0.95rem;">{{ historial.paciente.nombres if historial.paciente else 'N/A' }} 
+                                        {{ historial.paciente.apellidos if historial.paciente else '' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-calendar me-1"></i>Fecha</small>
+                                <strong style="font-size: 0.95rem;">{{ historial.fecha.strftime('%d/%m/%Y %H:%M') if historial.fecha else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block" style="font-size: 0.7rem;"><i class="fas fa-user-md me-1"></i>Médico</small>
+                                <strong style="font-size: 0.95rem;">{{ historial.medico.nombre_completo() if historial.medico else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Diagnóstico -->
+                    <div class="mb-3">
+                        <label class="fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                            <i class="fas fa-stethoscope me-1" style="color: #ec4899;"></i> Diagnóstico
+                        </label>
+                        <div class="p-2 bg-light rounded-3" style="font-size: 0.95rem;">
+                            {{ historial.diagnostico or 'Sin diagnóstico' }}
+                        </div>
+                    </div>
+
+                    <!-- Síntomas -->
+                    <div class="mb-3">
+                        <label class="fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                            <i class="fas fa-head-side-virus me-1" style="color: #ec4899;"></i> Síntomas
+                        </label>
+                        <div class="p-2 bg-light rounded-3" style="font-size: 0.95rem;">
+                            {{ historial.sintomas or 'Sin síntomas' }}
+                        </div>
+                    </div>
+
+                    <!-- Tratamiento -->
+                    <div class="mb-3">
+                        <label class="fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                            <i class="fas fa-pills me-1" style="color: #ec4899;"></i> Tratamiento
+                        </label>
+                        <div class="p-2 bg-light rounded-3" style="font-size: 0.95rem;">
+                            {{ historial.tratamiento or 'Sin tratamiento' }}
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-3">
+                        <label class="fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                            <i class="fas fa-comment me-1" style="color: #ec4899;"></i> Observaciones
+                        </label>
+                        <div class="p-2 bg-light rounded-3" style="font-size: 0.95rem;">
+                            {{ historial.observaciones or 'Sin observaciones' }}
+                        </div>
+                    </div>
+
+                    <!-- Recetas -->
+                    <hr class="my-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                            <i class="fas fa-prescription me-1" style="color: #ec4899;"></i> Recetas
+                        </label>
+                        <!-- BOTÓN VER RECETAS -->
+                        <a href="{{ url_for('historial.recetas', id=historial.id) }}" 
+                           class="btn btn-success btn-sm rounded-pill px-3" 
+                           style="font-size: 0.8rem; background: linear-gradient(135deg, #059669, #047857); border: none; color: white; transition: all 0.3s ease;">
+                            <i class="fas fa-prescription me-1"></i>Ver todas
+                        </a>
+                    </div>
+                    
+                    {% if historial.recetas %}
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="font-size: 0.75rem;">Medicamento</th>
+                                    <th style="font-size: 0.75rem;">Dosis</th>
+                                    <th style="font-size: 0.75rem;">Duración</th>
+                                    <th style="font-size: 0.75rem;">Indicaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for receta in historial.recetas[:3] %}  <!-- Mostrar solo 3 -->
+                                <tr>
+                                    <td style="font-size: 0.85rem;"><strong>{{ receta.medicamento }}</strong></td>
+                                    <td style="font-size: 0.85rem;">{{ receta.dosis }}</td>
+                                    <td style="font-size: 0.85rem;">{{ receta.duracion }}</td>
+                                    <td style="font-size: 0.85rem;">{{ receta.indicaciones }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if historial.recetas|length > 3 %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted" style="font-size: 0.8rem;">
+                                        <i class="fas fa-ellipsis-h me-1"></i>
+                                        Y {{ historial.recetas|length - 3 }} receta(s) más
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-2 bg-light rounded-3 text-center" style="font-size: 0.9rem; color: #6c757d;">
+                        <i class="fas fa-info-circle me-1"></i> No hay recetas registradas
+                    </div>
+                    {% endif %}
+
+                    <hr class="my-3">
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 mt-3 justify-content-center flex-wrap">
+                        <a href="{{ url_for('historial.index') }}" class="btn btn-outline-secondary rounded-pill px-4" style="font-size: 0.85rem;">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        
+                        
+                        <a href="{{ url_for('historial.recetas', id=historial.id) }}" 
+                           class="btn btn-success rounded-pill px-4" 
+                           style="font-size: 0.85rem; background: linear-gradient(135deg, #059669, #047857); border: none; color: white; transition: all 0.3s ease;">
+                            <i class="fas fa-prescription me-1"></i>Ver Recetas
+                        </a>
+                        
+                        {% if current_user.is_admin() or current_user.is_medico() %}
+                        <a href="{{ url_for('historial.editar', id=historial.id) }}" 
+                           class="btn btn-primary rounded-pill px-4" 
+                           style="font-size: 0.85rem; background: linear-gradient(135deg, #0d6efd, #0a58ca); border: none; transition: all 0.3s ease;">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .btn-success:hover {
+        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    .btn-primary:hover {
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+</style>
+{% endblock %}

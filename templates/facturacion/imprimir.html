@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura.numero_factura }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        
+        @media print {
+            body { 
+                background: white !important;
+                padding: 20px !important;
+                font-size: 12px;
+            }
+            .no-print { display: none !important; }
+            .card-glass {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+            .print-header {
+                border-bottom: 2px solid #0d6efd;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            .factura-total {
+                font-size: 1.8rem;
+                font-weight: 800;
+                color: #0d1b3e;
+            }
+            .badge-estado {
+                font-size: 0.9rem;
+                padding: 6px 16px;
+                border-radius: 50px;
+            }
+            .info-row {
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }
+        }
+        
+        
+        body {
+            background: #f0f4ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .card-glass {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .print-header {
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .factura-total {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0d1b3e;
+        }
+        .info-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .badge-estado {
+            font-size: 1rem;
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+        
+        /* Botones */
+        .btn-imprimir {
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-imprimir:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
+            color: white;
+        }
+        .btn-volver {
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: 600;
+            background: #6c757d;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-volver:hover {
+            background: #5a6268;
+            transform: translateY(-3px);
+            color: white;
+        }
+        .btn-pdf {
+            border-radius: 50px;
+            padding: 12px 35px;
+            font-weight: 600;
+            background: #dc3545;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-pdf:hover {
+            background: #c82333;
+            transform: translateY(-3px);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-glass">
+        <!-- ===== BOTONES ===== -->
+        <div class="no-print text-end mb-3">
+            <a href="{{ url_for('factura.show', id=factura.id) }}" class="btn btn-volver">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+            <button onclick="window.print()" class="btn btn-imprimir ms-2">
+                <i class="fas fa-print me-2"></i>Imprimir
+            </button>
+            <button onclick="window.print()" class="btn btn-pdf ms-2">
+                <i class="fas fa-file-pdf me-2"></i>Guardar PDF
+            </button>
+        </div>
+
+        <!-- ===== ENCABEZADO DE LA FACTURA ===== -->
+        <div class="print-header text-center">
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-heartbeat" style="color: #0d6efd;"></i> MediCare
+            </h1>
+            <p style="color: #6c757d; margin: 0;">Clínica y Salud Integral</p>
+            <p style="color: #6c757d; font-size: 0.9rem;">Calle Principal #123 - Tel: (+591) 123 456 78</p>
+            <h2 class="mt-3" style="font-weight: 700; color: #0d1b3e;">
+                FACTURA {{ factura.numero_factura }}
+            </h2>
+        </div>
+
+        <!-- ===== ESTADO ===== -->
+        <div class="text-center mb-4">
+            <span class="badge-estado" style"
+                {% if factura.estado_pago == 'pagado' %}background: #28a745; color: white;
+                {% elif factura.estado_pago == 'pendiente' %}background: #ffc107; color: #212529;
+                {% else %}background: #dc3545; color: white;{% endif %}">
+                <i class="fas fa-circle me-1"></i> {{ factura.estado_pago|upper }}
+            </span>
+        </div>
+
+        <!-- ===== INFORMACIÓN DEL PACIENTE Y CITA ===== -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="info-row">
+                    <small class="text-muted d-block">Paciente</small>
+                    <strong>{{ factura.cita.paciente.nombres if factura.cita and factura.cita.paciente else 'N/A' }} 
+                            {{ factura.cita.paciente.apellidos if factura.cita and factura.cita.paciente else '' }}</strong>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row">
+                    <small class="text-muted d-block">Fecha de Emisión</small>
+                    <strong>{{ factura.fecha_emision.strftime('%d/%m/%Y %H:%M') if factura.fecha_emision else 'N/A' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="info-row">
+                    <small class="text-muted d-block">Médico</small>
+                    <strong>{{ factura.cita.medico.nombre_completo() if factura.cita and factura.cita.medico else 'N/A' }}</strong>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row">
+                    <small class="text-muted d-block">Cita ID</small>
+                    <strong>#{{ factura.cita_id if factura.cita_id else 'N/A' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DETALLES DE LA CONSULTA ===== -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="info-row">
+                    <small class="text-muted d-block">Motivo de la Consulta</small>
+                    <strong>{{ factura.cita.motivo if factura.cita and factura.cita.motivo else 'Sin motivo' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MÉTODO DE PAGO ===== -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="info-row">
+                    <small class="text-muted d-block">Método de Pago</small>
+                    <strong>{{ factura.metodo_pago or 'N/A' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TOTAL ===== -->
+        <div class="row mt-4 pt-3" style="border-top: 3px double #0d1b3e;">
+            <div class="col-md-12 text-center">
+                <small class="text-muted d-block">TOTAL</small>
+                <span class="factura-total">Bs. {{ "%.2f"|format(factura.monto_total) }}</span>
+            </div>
+        </div>
+
+        <!-- ===== PIE DE PÁGINA ===== -->
+        <div class="text-center mt-4 pt-3" style="border-top: 1px solid #eee; color: #6c757d; font-size: 0.85rem;">
+            <p>¡Gracias por confiar en MediCare!</p>
+            <p>Esta factura es un documento válido para uso fiscal.</p>
+            <p>Fecha de emisión: {{ factura.fecha_emision.strftime('%d/%m/%Y %H:%M') if factura.fecha_emision else 'N/A' }}</p>
+            {% if factura.estado_pago == 'pagado' and factura.fecha_pago %}
+            <p>Fecha de pago: {{ factura.fecha_pago.strftime('%d/%m/%Y %H:%M') }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 style="font-weight: 800; color: #0d1b3e;">
+            <i class="fas fa-info-circle" style="color: #2563eb; margin-right: 10px;"></i>Acerca de MediCare
+        </h1>
+        <p style="color: #4a6a8a; max-width: 700px; margin: 15px auto 0;">Plataforma web desarrollada en Flask para la gestión eficiente de consultorios médicos.</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-glass p-4 text-center">
+                <i class="fas fa-calendar-check" style="font-size: 3rem; color: #2563eb; margin-bottom: 20px;"></i>
+                <h5 style="font-weight: 700; color: #0d1b3e;">Gestión de Citas</h5>
+                <p style="color: #4a6a8a;">Administra citas médicas de manera eficiente y sin complicaciones.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-glass p-4 text-center">
+                <i class="fas fa-users" style="font-size: 3rem; color: #2563eb; margin-bottom: 20px;"></i>
+                <h5 style="font-weight: 700; color: #0d1b3e;">Pacientes y Médicos</h5>
+                <p style="color: #4a6a8a;">Gestiona perfiles de pacientes y médicos con historial completo.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-glass p-4 text-center">
+                <i class="fas fa-file-invoice" style="font-size: 3rem; color: #2563eb; margin-bottom: 20px;"></i>
+                <h5 style="font-weight: 700; color: #0d1b3e;">Facturación</h5>
+                <p style="color: #4a6a8a;">Controla pagos, facturas y cobros de manera integrada.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-glass mt-4 p-4 text-center" style="background: var(--primary-gradient); color: white;">
+        <h4 style="font-weight: 700;">💙 Comprometidos con tu salud</h4>
+        <p style="opacity: 0.9;">En MediCare, combinamos tecnología moderna con atención humana para brindarte el mejor servicio.</p>
+    </div>
+</div>
+{% endblock %}

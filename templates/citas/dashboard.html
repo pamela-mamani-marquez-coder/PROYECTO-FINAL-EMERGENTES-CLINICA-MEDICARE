@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 style="font-weight: 800; color: #0d1b3e;">
+        <i class="fas fa-calendar-day" style="color: #2563eb; margin-right: 10px;"></i>Mis Citas
+    </h1>
+    <p style="color: #4a6a8a;">Citas programadas para hoy</p>
+
+    <div class="row g-4 mt-2">
+        <!-- Citas de Hoy -->
+        <div class="col-md-8">
+            <div class="card-glass p-4">
+                <h5><i class="fas fa-calendar-check me-2"></i>Próximas Citas</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Paciente</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cita in citas_hoy %}
+                            <tr>
+                                <td><strong>{{ cita.fecha_hora.strftime('%H:%M') }}</strong></td>
+                                <td>{{ cita.paciente.nombres if cita.paciente else 'N/A' }}</td>
+                                <td>{{ cita.motivo or 'Sin motivo' }}</td>
+                                <td>
+                                    <span class="badge" style"
+                                        {% if cita.estado == 'confirmada' %}background: #28a745; color: white;
+                                        {% elif cita.estado == 'pendiente' %}background: #ffc107; color: #212529;
+                                        {% else %}background: #6c757d; color: white;{% endif %}">
+                                        {{ cita.estado|title }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No hay citas para hoy</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="col-md-4">
+            <div class="card-glass p-4 text-center">
+                <i class="fas fa-calendar-alt" style="font-size: 3rem; color: #2563eb;"></i>
+                <h3 class="mt-2">{{ citas_hoy|length }}</h3>
+                <p class="text-muted">Citas hoy</p>
+                <a href="{{ url_for('cita.index') }}" class="btn btn-primary-custom w-100">
+                    <i class="fas fa-list me-2"></i>Ver todas mis citas
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

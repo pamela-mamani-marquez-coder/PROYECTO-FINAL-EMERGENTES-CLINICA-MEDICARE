@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #0d6efd, #0a58ca);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-prescription text-white" style="font-size: 1.2rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Detalle de Receta
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-pills me-1"></i>Medicamento</small>
+                                <strong style="font-size: 1.1rem;">{{ receta.medicamento }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-weight-scale me-1"></i>Dosis</small>
+                                <strong>{{ receta.dosis or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-clock me-1"></i>Duración</small>
+                                <strong>{{ receta.duracion or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-info-circle me-1"></i>Indicaciones</small>
+                                <strong>{{ receta.indicaciones or 'Sin indicaciones' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-calendar me-1"></i>Fecha Emisión</small>
+                                <strong>{{ receta.fecha_emision.strftime('%d/%m/%Y %H:%M') if receta.fecha_emision else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-user-injured me-1"></i>Paciente</small>
+                                <strong>
+                                    {% if receta.historial and receta.historial.paciente %}
+                                    {{ receta.historial.paciente.nombres }} {{ receta.historial.paciente.apellidos }}
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 mt-3 justify-content-center">
+                        <a href="{{ url_for('admin.recetas') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>
+{% endblock %}

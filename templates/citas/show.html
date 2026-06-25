@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente amarillo -->
+                <div class="card-header text-center border-0 py-3 bg-gradient-yellow">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-calendar-alt text-white fs-5"></i>
+                        <span class="fw-bold text-white fs-6">
+                            Detalle de Cita
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0 small">
+                        #{{ cita.id }}
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Estado -->
+                    <div class="text-center mb-3">
+                        <span class="badge rounded-pill px-4 py-2 
+                            {% if cita.estado == 'confirmada' %}bg-success
+                            {% elif cita.estado == 'pendiente' %}bg-warning text-dark
+                            {% elif cita.estado == 'completada' %}bg-info text-white
+                            {% elif cita.estado == 'cancelada' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                            {{ cita.estado|upper }}
+                        </span>
+                    </div>
+
+                    <!-- Información en grid -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-user-injured me-1"></i>Paciente</small>
+                                <strong class="fs-6">{{ cita.paciente.nombres if cita.paciente else 'N/A' }} 
+                                        {{ cita.paciente.apellidos if cita.paciente else '' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-user-md me-1"></i>Médico</small>
+                                <strong class="fs-6">{{ cita.medico.nombre_completo() if cita.medico else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-calendar me-1"></i>Fecha</small>
+                                <strong class="fs-6">{{ cita.fecha_hora.strftime('%d/%m/%Y') if cita.fecha_hora else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-clock me-1"></i>Hora</small>
+                                <strong class="fs-6">{{ cita.fecha_hora.strftime('%H:%M') if cita.fecha_hora else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-door-open me-1"></i>Sala</small>
+                                <strong class="fs-6">{{ cita.sala.numero if cita.sala else 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-hashtag me-1"></i>ID</small>
+                                <strong class="fs-6">#{{ cita.id }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-3">
+                                <small class="text-muted d-block small"><i class="fas fa-comment me-1"></i>Motivo</small>
+                                <strong class="fs-6">{{ cita.motivo or 'Sin motivo' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 mt-2 justify-content-center flex-wrap">
+                        <a href="{{ url_for('cita.index') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 small">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        {% if current_user.is_admin() or current_user.is_recepcionista() %}
+                        <a href="{{ url_for('cita.editar', id=cita.id) }}" class="btn rounded-pill px-4 py-2 small bg-gradient-yellow text-white border-0 shadow-sm">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        {% endif %}
+                        {% if cita.estado == 'pendiente' %}
+                            {% if current_user.is_admin() or current_user.is_recepcionista() or current_user.is_medico() %}
+                            <a href="{{ url_for('cita.cancelar', id=cita.id) }}" 
+                               class="btn btn-danger rounded-pill px-4 py-2 small"
+                               onclick="return confirm('¿Estás seguro de cancelar esta cita?')">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                        {% if cita.estado == 'pendiente' and current_user.is_medico() %}
+                        <form method="POST" action="{{ url_for('cita.completar', id=cita.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success rounded-pill px-4 py-2 small" onclick="return confirm('¿Marcar esta cita como completada?')">
+                                <i class="fas fa-check me-1"></i>Completar
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% if cita.estado == 'completada' %}
+                            {% if current_user.is_admin() or current_user.is_medico() %}
+                            <a href="{{ url_for('historial.crear', cita_id=cita.id) }}" class="btn btn-success rounded-pill px-4 py-2 small">
+                                <i class="fas fa-file-medical me-1"></i>Historial
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-gradient-yellow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    .small {
+        font-size: 0.85rem !important;
+    }
+    .fs-6 {
+        font-size: 0.95rem !important;
+    }
+    .fs-5 {
+        font-size: 1.2rem !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Título -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-chart-pie" style="color: #2563eb; margin-right: 10px;"></i>Estadísticas
+            </h1>
+            <p style="color: #4a6a8a; margin: 0;">Métricas e indicadores de la clínica</p>
+        </div>
+        <span class="badge" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; padding: 8px 20px; border-radius: 50px;">
+            <i class="fas fa-calendar-alt me-1"></i> {{ citas_hoy }} citas hoy
+        </span>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card-glass text-center p-3" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; border: none;">
+                <i class="fas fa-users" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h2 class="display-5 fw-bold mt-2">{{ total_pacientes }}</h2>
+                <p style="opacity: 0.8;">Pacientes Registrados</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass text-center p-3" style="background: linear-gradient(135deg, #28a745, #1e7e34); color: white; border: none;">
+                <i class="fas fa-calendar-check" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h2 class="display-5 fw-bold mt-2">{{ total_citas }}</h2>
+                <p style="opacity: 0.8;">Citas Totales</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass text-center p-3" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; border: none;">
+                <i class="fas fa-user-md" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h2 class="display-5 fw-bold mt-2">{{ total_medicos }}</h2>
+                <p style="opacity: 0.8;">Médicos Activos</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-glass text-center p-3" style="background: linear-gradient(135deg, #17a2b8, #117a8b); color: white; border: none;">
+                <i class="fas fa-dollar-sign" style="font-size: 2rem; opacity: 0.8;"></i>
+                <h2 class="display-5 fw-bold mt-2">Bs. {{ "%.0f"|format(total_ingresos) }}</h2>
+                <p style="opacity: 0.8;">Ingresos Totales</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos más pequeños -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-7">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-chart-bar me-2"></i>Citas por Mes</h5>
+                <div style="height: 220px;">
+                    <canvas id="citasChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-circle me-2"></i>Citas por Estado</h5>
+                <div style="height: 220px;">
+                    <canvas id="estadoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-7">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-dollar-sign me-2"></i>Ingresos por Mes</h5>
+                <div style="height: 200px;">
+                    <canvas id="ingresosChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-trophy me-2"></i>Médicos Más Solicitados</h5>
+                {% if medicos_top %}
+                <ul class="list-unstyled" style="font-size: 0.9rem;">
+                    {% for medico in medicos_top %}
+                    <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-user-md text-primary me-2"></i>{{ medico.nombre }} {{ medico.apellidos }}</span>
+                        <span class="badge bg-primary rounded-pill">{{ medico.total_citas }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3">No hay datos suficientes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Especialidades y pacientes recientes -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-stethoscope me-2"></i>Especialidades Más Demandadas</h5>
+                {% if especialidades_top %}
+                <ul class="list-unstyled" style="font-size: 0.9rem;">
+                    {% for esp in especialidades_top %}
+                    <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-star text-warning me-2"></i>{{ esp.nombre }}</span>
+                        <span class="badge bg-success rounded-pill">{{ esp.total_citas }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3">No hay datos suficientes.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-glass p-4">
+                <h5 style="font-size: 0.95rem;"><i class="fas fa-user-plus me-2"></i>Últimos Pacientes</h5>
+                {% if pacientes_recientes %}
+                <ul class="list-unstyled" style="font-size: 0.9rem;">
+                    {% for paciente in pacientes_recientes %}
+                    <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-user-injured text-info me-2"></i>{{ paciente.nombres }} {{ paciente.apellidos }}</span>
+                        <span class="text-muted small">{{ paciente.fecha_registro.strftime('%d/%m/%Y') if paciente.fecha_registro else 'N/A' }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3">No hay pacientes registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="datos-graficos" style="display: none;"
+     data-meses='{{ meses|tojson }}'
+     data-citas-por-mes='{{ citas_por_mes|tojson }}'
+     data-ingresos-por-mes='{{ ingresos_por_mes|tojson }}'
+     data-citas-pendientes='{{ citas_pendientes }}'
+     data-citas-confirmadas='{{ citas_confirmadas }}'
+     data-citas-completadas='{{ citas_completadas }}'
+     data-citas-canceladas='{{ citas_canceladas }}'>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+</script>
+
+<script>
+    
+    var datos = document.getElementById('datos-graficos');
+    
+    var meses = JSON.parse(datos.dataset.meses || '[]');
+    var citasPorMes = JSON.parse(datos.dataset.citasPorMes || '[]');
+    var ingresosPorMes = JSON.parse(datos.dataset.ingresosPorMes || '[]');
+    
+    var citasPendientes = parseInt(datos.dataset.citasPendientes) || 0;
+    var citasConfirmadas = parseInt(datos.dataset.citasConfirmadas) || 0;
+    var citasCompletadas = parseInt(datos.dataset.citasCompletadas) || 0;
+    var citasCanceladas = parseInt(datos.dataset.citasCanceladas) || 0;
+
+    // ============================================
+    // GRÁFICO DE CITAS POR MES (BARRAS)
+    // ============================================
+    var ctx1 = document.getElementById('citasChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: 'Citas',
+                data: citasPorMes,
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // ============================================
+    // GRÁFICO DE CITAS POR ESTADO (DONA)
+    // ============================================
+    var ctx2 = document.getElementById('estadoChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pendientes', 'Confirmadas', 'Completadas', 'Canceladas'],
+            datasets: [{
+                data: [
+                    citasPendientes,
+                    citasConfirmadas,
+                    citasCompletadas,
+                    citasCanceladas
+                ],
+                backgroundColor: ['#ffc107', '#28a745', '#17a2b8', '#dc3545'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 10,
+                        usePointStyle: true,
+                        font: { size: 11 }
+                    }
+                }
+            }
+        }
+    });
+
+    // ============================================
+    // GRÁFICO DE INGRESOS POR MES (LÍNEA)
+    // ============================================
+    var ctx3 = document.getElementById('ingresosChart').getContext('2d');
+    new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: 'Ingresos (Bs.)',
+                data: ingresosPorMes,
+                backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                borderColor: 'rgba(23, 162, 184, 1)',
+                borderWidth: 2,
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(23, 162, 184, 1)',
+                pointRadius: 3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return 'Bs. ' + value; }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .card-glass {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    .card-glass:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+</style>
+{% endblock %}

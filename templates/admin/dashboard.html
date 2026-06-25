@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- ===== TÍTULO ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e; font-size: 2rem;">
+                <i class="fas fa-chart-line" style="color: #2563eb; margin-right: 10px;"></i>Dashboard Administrativo
+            </h1>
+            <p style="color: #4a6a8a; margin: 0; font-size: 0.95rem;">Panel de control completo para la gestión de la clínica</p>
+        </div>
+        <span class="badge" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; padding: 10px 24px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);">
+            <i class="fas fa-user-shield me-2"></i> {{ usuario.rol|title }}
+        </span>
+    </div>
+
+ <!-- ===== TARJETAS DE ESTADÍSTICAS ===== -->
+<div class="row g-4 mb-4">
+    <!-- Usuarios -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; overflow: hidden;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p style="opacity: 0.8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Usuarios</p>
+                        <h2 class="display-4 fw-bold mb-0" style="font-size: 3.2rem;">{{ total_usuarios }}</h2>
+                        <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 5px;">Totales</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users" style="font-size: 2.4rem; opacity: 0.9;"></i>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('admin.crear_usuario') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-plus me-1"></i>Nuevo
+                    </a>
+                    <a href="{{ url_for('admin.usuarios') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver todos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Médicos -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #059669, #047857); color: white; overflow: hidden;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p style="opacity: 0.8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Médicos</p>
+                        <h2 class="display-4 fw-bold mb-0" style="font-size: 3.2rem;">{{ total_medicos }}</h2>
+                        <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 5px;">Activos</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-md" style="font-size: 2.4rem; opacity: 0.9;"></i>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('medico.crear') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-plus me-1"></i>Nuevo
+                    </a>
+                    <a href="{{ url_for('medico.index') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver todos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pacientes -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; overflow: hidden;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p style="opacity: 0.8; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Pacientes</p>
+                        <h2 class="display-4 fw-bold mb-0" style="font-size: 3.2rem;">{{ total_pacientes }}</h2>
+                        <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 5px;">Registrados</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-injured" style="font-size: 2.4rem; opacity: 0.9;"></i>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('paciente.crear') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-plus me-1"></i>Nuevo
+                    </a>
+                    <a href="{{ url_for('paciente.index') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver todos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Citas (AMARILLO) -->
+    <div class="col-xl-3 col-lg-6 col-md-6">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; overflow: hidden;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p style="opacity: 0.85; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; color: rgba(255,255,255,0.9);">Citas</p>
+                        <h2 class="display-4 fw-bold mb-0" style="font-size: 3.2rem;">{{ total_citas }}</h2>
+                        <p style="opacity: 0.85; font-size: 0.9rem; margin-top: 5px; color: rgba(255,255,255,0.9);">Totales</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-calendar-check" style="font-size: 2.4rem; opacity: 0.9; color: white;"></i>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('cita.crear') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.25); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-plus me-1"></i>Nueva
+                    </a>
+                    <a href="{{ url_for('cita.index') }}" class="btn btn-sm" style="background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50px; padding: 6px 16px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver todas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ===== MÓDULOS ADICIONALES ===== -->
+<div class="row g-4 mt-2">
+    <!-- Facturación -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: white; overflow: hidden; border-left: 4px solid #7c3aed;">
+            <div class="card-body p-4 text-center">
+                <div style="background: #f3e8ff; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fas fa-file-invoice" style="font-size: 1.8rem; color: #7c3aed;"></i>
+                </div>
+                <h6 style="font-weight: 700; color: #0d1b3e;">Facturación</h6>
+                <p style="font-size: 0.85rem; color: #6c757d;">Gestión de pagos y facturas</p>
+                <a href="{{ url_for('factura.index') }}" class="btn btn-sm" style="background: #7c3aed; color: white; border: none; border-radius: 50px; padding: 6px 20px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-right me-1"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial Clínico -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: white; overflow: hidden; border-left: 4px solid #ec4899;">
+            <div class="card-body p-4 text-center">
+                <div style="background: #fce4ec; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fas fa-history" style="font-size: 1.8rem; color: #ec4899;"></i>
+                </div>
+                <h6 style="font-weight: 700; color: #0d1b3e;">Historial Clínico</h6>
+                <p style="font-size: 0.85rem; color: #6c757d;">Registros médicos de pacientes</p>
+                <a href="{{ url_for('historial.index') }}" class="btn btn-sm" style="background: #ec4899; color: white; border: none; border-radius: 50px; padding: 6px 20px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-right me-1"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: white; overflow: hidden; border-left: 4px solid #0ea5e9;">
+            <div class="card-body p-4 text-center">
+                <div style="background: #e0f2fe; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fas fa-chart-pie" style="font-size: 1.8rem; color: #0ea5e9;"></i>
+                </div>
+                <h6 style="font-weight: 700; color: #0d1b3e;">Estadísticas</h6>
+                <p style="font-size: 0.85rem; color: #6c757d;">Reportes y métricas del sistema</p>
+                <a href="{{ url_for('admin.estadisticas') }}" class="btn btn-sm" style="background: #0ea5e9; color: white; border: none; border-radius: 50px; padding: 6px 20px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-right me-1"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SALAS -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: white; overflow: hidden; border-left: 4px solid #f59e0b;">
+            <div class="card-body p-4 text-center">
+                <div style="background: #fef9e7; width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="fas fa-door-open" style="font-size: 1.8rem; color: #d97706;"></i>
+                </div>
+                <h6 style="font-weight: 700; color: #0d1b3e;">Salas</h6>
+                <p style="font-size: 0.85rem; color: #6c757d;">Consultorios y salas</p>
+                <a href="{{ url_for('admin.salas') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 50px; padding: 6px 20px; font-weight: 500; text-decoration: none; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-right me-1"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== INFORMACIÓN DEL ADMIN ===== -->
+    <div class="row g-4 mt-3">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header border-0" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
+                    <i class="fas fa-user-circle me-2"></i> Información del Administrador
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p style="margin-bottom: 12px;"><strong style="color: #0d1b3e;">Nombre:</strong><br><span style="color: #4a6a8a;">{{ usuario.nombres }} {{ usuario.apellidos }}</span></p>
+                            <p style="margin-bottom: 12px;"><strong style="color: #0d1b3e;">Usuario:</strong><br><span style="color: #4a6a8a;">{{ usuario.username }}</span></p>
+                            <p style="margin-bottom: 12px;"><strong style="color: #0d1b3e;">Email:</strong><br><span style="color: #4a6a8a;">{{ usuario.email }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p style="margin-bottom: 12px;"><strong style="color: #0d1b3e;">Rol:</strong><br><span class="badge" style="background: #2563eb; color: white; padding: 6px 16px; border-radius: 50px; font-weight: 500;">{{ usuario.rol|title }}</span></p>
+                            <p style="margin-bottom: 12px;"><strong style="color: #0d1b3e;">Registro:</strong><br><span style="color: #4a6a8a;">{{ usuario.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</span></p>
+                            <a href="{{ url_for('auth.perfil') }}" class="btn btn-sm btn-outline-primary" style="border-radius: 50px; padding: 6px 20px; font-weight: 500; text-decoration: none; margin-top: 5px;">
+                                <i class="fas fa-edit me-1"></i>Editar perfil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header border-0" style="background: linear-gradient(135deg, #059669, #047857); color: white; border-radius: 16px 16px 0 0; padding: 16px 24px;">
+                    <i class="fas fa-tasks me-2"></i> Resumen Rápido
+                </div>
+                <div class="card-body p-4">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div style="font-size: 2.2rem; font-weight: 800; color: #2563eb;">{{ total_usuarios }}</div>
+                            <div style="font-size: 0.85rem; color: #4a6a8a;">Usuarios</div>
+                        </div>
+                        <div class="col-4">
+                            <div style="font-size: 2.2rem; font-weight: 800; color: #059669;">{{ total_medicos }}</div>
+                            <div style="font-size: 0.85rem; color: #4a6a8a;">Médicos</div>
+                        </div>
+                        <div class="col-4">
+                            <div style="font-size: 2.2rem; font-weight: 800; color: #d97706;">{{ total_pacientes }}</div>
+                            <div style="font-size: 0.85rem; color: #4a6a8a;">Pacientes</div>
+                        </div>
+                    </div>
+                    <hr style="margin: 16px 0;">
+                    <div class="text-center">
+                        <span style="font-size: 0.9rem; color: #4a6a8a;">
+                            <i class="fas fa-clock me-1"></i> Último acceso: {{ usuario.fecha_registro.strftime('%d/%m/%Y %H:%M') }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS adicional para efectos -->
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 45px rgba(0,0,0,0.15) !important;
+    }
+    .btn-sm:hover {
+        transform: translateY(-2px);
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- ============================================================ -->
+<!-- 1. HERO SECTION                                              -->
+<!-- ============================================================ -->
+<section class="position-relative overflow-hidden" style="min-height: 90vh; display: flex; align-items: center;">
+    <div style="position: absolute; inset: 0; 
+        background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+        filter: blur(8px) brightness(0.9); z-index: 0;"></div>
+    
+    <div style="position: absolute; inset: 0; 
+        background: linear-gradient(135deg, rgba(13, 27, 62, 0.92) 0%, rgba(26, 58, 122, 0.85) 50%, rgba(37, 99, 235, 0.4) 100%); z-index: 1;"></div>
+
+    <div class="container position-relative z-2 py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white mb-5 mb-lg-0">
+                <span class="badge bg-white text-dark px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm">
+                    <i class="fas fa-heartbeat me-2" style="color: #0d6efd;"></i>CLÍNICA MÉDICA INTEGRAL
+                </span>
+                <h1 class="display-3 fw-bold mb-4 lh-sm">
+                    Tu salud en manos <br><span style="color: #64b5f6;">de expertos.</span>
+                </h1>
+                <p class="lead mb-5 opacity-90" style="color: rgba(255,255,255,0.9);">
+                    Tecnología moderna, atención humana y compromiso total con tu bienestar. Agenda tu cita hoy mismo.
+                </p>
+                
+                <div class="d-flex flex-wrap gap-3">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('core.dashboard') }}" class="btn btn-light btn-lg rounded-pill px-4 fw-bold text-dark shadow">
+                            <i class="fas fa-calendar-check me-2"></i>Mi Panel
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg rounded-pill px-4 fw-bold text-dark shadow">
+                            <i class="fas fa-calendar-check me-2"></i>Agendar Cita
+                        </a>
+                    {% endif %}
+                    <a href="#servicios" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                        <i class="fas fa-info-circle me-2"></i>Ver Servicios
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="glass-effect p-3 rounded-4 shadow-lg" style="background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15);">
+                    <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Médico" 
+                         class="img-fluid rounded-3" 
+                         style="width: 100%; height: 350px; object-fit: cover;">
+                    <div class="text-center mt-3">
+                        <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                            <i class="fas fa-user-md me-2" style="color: #64b5f6;"></i>
+                            Equipo médico altamente calificado
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2. ESTADÍSTICAS CON ICONOS                                   -->
+<!-- ============================================================ -->
+<section class="py-5" style="background: #f8fafd;">
+    <div class="container py-4">
+        <div class="row text-center g-4">
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: white; box-shadow: 0 2px 20px rgba(13,27,62,0.06); transition: transform 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-users" style="font-size: 2.5rem; color: #0d6efd;"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold" style="color: #0d1b3e;">500+</h2>
+                    <p class="text-muted small">Pacientes Atendidos</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: white; box-shadow: 0 2px 20px rgba(13,27,62,0.06); transition: transform 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-user-md" style="font-size: 2.5rem; color: #0d6efd;"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold" style="color: #0d1b3e;">15</h2>
+                    <p class="text-muted small">Médicos Especialistas</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: white; box-shadow: 0 2px 20px rgba(13,27,62,0.06); transition: transform 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-star" style="font-size: 2.5rem; color: #ffc107;"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold" style="color: #0d1b3e;">98%</h2>
+                    <p class="text-muted small">Satisfacción</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: white; box-shadow: 0 2px 20px rgba(13,27,62,0.06); transition: transform 0.3s ease;">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-clock" style="font-size: 2.5rem; color: #28a745;"></i>
+                    </div>
+                    <h2 class="display-5 fw-bold" style="color: #0d1b3e;">24/7</h2>
+                    <p class="text-muted small">Atención de Emergencias</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3. CONOCE A NUESTROS MÉDICOS                                -->
+<!-- ============================================================ -->
+<section class="py-5" style="background: white;">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h6 class="fw-bold text-uppercase letter-spacing-2 mb-2" style="color: #0d6efd;">Nuestro Equipo</h6>
+            <h2 class="fw-bold display-6" style="color: #0d1b3e;">Médicos Especialistas</h2>
+            <p class="text-muted">Profesionales dedicados a tu salud y bienestar.</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         class="card-img-top" alt="Médico" style="height: 220px; object-fit: cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Dr. Carlos García</h6>
+                        <small class="text-muted">Cardiología</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         class="card-img-top" alt="Médica" style="height: 220px; object-fit: cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Dra. María López</h6>
+                        <small class="text-muted">Pediatría</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         class="card-img-top" alt="Médico" style="height: 220px; object-fit: cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Dr. Roberto Sánchez</h6>
+                        <small class="text-muted">Traumatología</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+                    <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         class="card-img-top" alt="Médico" style="height: 220px; object-fit: cover;">
+                    <div class="card-body text-center p-3">
+                        <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Dra. Ana Martínez</h6>
+                        <small class="text-muted">Ginecología</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4. SERVICIOS                                                -->
+<!-- ============================================================ -->
+<section id="servicios" class="py-5" style="background: #f8fafd;">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h6 class="fw-bold text-uppercase letter-spacing-2 mb-2" style="color: #0d6efd;">Nuestros Servicios</h6>
+            <h2 class="fw-bold display-6" style="color: #0d1b3e;">Atención médica de calidad</h2>
+            <p class="text-muted">Conoce las especialidades que ofrecemos para cuidar tu salud.</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift text-center">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" 
+                         style="width: 70px; height: 70px; background-color: #e8edf9; color: #0d1b3e;">
+                        <i class="fas fa-stethoscope fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold" style="color: #0d1b3e;">Medicina General</h5>
+                    <p class="text-secondary small">Chequeos completos y prevención para toda la familia.</p>
+                    <a href="#" class="btn btn-sm rounded-pill mt-2" style="background-color: #e8edf9; color: #0d1b3e; font-weight: 500;">
+                        Más info <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift text-center">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" 
+                         style="width: 70px; height: 70px; background-color: #e8edf9; color: #0d1b3e;">
+                        <i class="fas fa-heartbeat fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold" style="color: #0d1b3e;">Cardiología</h5>
+                    <p class="text-secondary small">Cuidado especializado del corazón con tecnología de punta.</p>
+                    <a href="#" class="btn btn-sm rounded-pill mt-2" style="background-color: #e8edf9; color: #0d1b3e; font-weight: 500;">
+                        Más info <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-lift text-center">
+                    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" 
+                         style="width: 70px; height: 70px; background-color: #e8edf9; color: #0d1b3e;">
+                        <i class="fas fa-baby fa-2x"></i>
+                    </div>
+                    <h5 class="fw-bold" style="color: #0d1b3e;">Pediatría</h5>
+                    <p class="text-secondary small">Atención dedicada para niños y adolescentes.</p>
+                    <a href="#" class="btn btn-sm rounded-pill mt-2" style="background-color: #e8edf9; color: #0d1b3e; font-weight: 500;">
+                        Más info <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5. TESTIMONIOS CON FOTOS                                   -->
+<!-- ============================================================ -->
+<section class="py-5" style="background: white;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="fw-bold text-uppercase letter-spacing-2 mb-2" style="color: #0d6efd;">Testimonios</h6>
+            <h2 class="fw-bold display-6" style="color: #0d1b3e;">Lo que dicen nuestros pacientes</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 rounded-4 h-100 hover-lift">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="Paciente" 
+                             class="rounded-circle me-3" 
+                             style="width: 55px; height: 55px; object-fit: cover;">
+                        <div>
+                            <h6 class="fw-bold mb-0" style="color: #0d1b3e;">María López</h6>
+                            <small class="text-muted">Paciente</small>
+                        </div>
+                    </div>
+                    <p class="text-secondary" style="font-size: 0.95rem;">"Excelente atención, médicos muy profesionales y el personal es muy amable."</p>
+                    <div style="color: #ffc107;">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 rounded-4 h-100 hover-lift">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="Paciente" 
+                             class="rounded-circle me-3" 
+                             style="width: 55px; height: 55px; object-fit: cover;">
+                        <div>
+                            <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Juan Pérez</h6>
+                            <small class="text-muted">Paciente</small>
+                        </div>
+                    </div>
+                    <p class="text-secondary" style="font-size: 0.95rem;">"El sistema de citas es muy fácil de usar y siempre me recuerdan mis citas."</p>
+                    <div style="color: #ffc107;">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 rounded-4 h-100 hover-lift">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
+                             alt="Paciente" 
+                             class="rounded-circle me-3" 
+                             style="width: 55px; height: 55px; object-fit: cover;">
+                        <div>
+                            <h6 class="fw-bold mb-0" style="color: #0d1b3e;">Ana García</h6>
+                            <small class="text-muted">Paciente</small>
+                        </div>
+                    </div>
+                    <p class="text-secondary" style="font-size: 0.95rem;">"La mejor clínica de la ciudad. Instalaciones modernas y tecnología de punta."</p>
+                    <div style="color: #ffc107;">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6. CTA FINAL                                                -->
+<!-- ============================================================ -->
+<section class="py-5" style="background: linear-gradient(135deg, #0d1b3e 0%, #1a3a7a 50%, #2563eb 100%); color: white; text-align: center;">
+    <div class="container py-4">
+        <h2 class="fw-bold display-5 mb-3">¿Listo para cuidar tu salud?</h2>
+        <p class="lead mb-4 opacity-90">Agenda tu cita hoy mismo y recibe la mejor atención médica.</p>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('cita.crear') }}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold shadow" style="color: #0d1b3e;">
+                <i class="fas fa-calendar-plus me-2"></i>Agendar Cita
+            </a>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold shadow" style="color: #0d1b3e;">
+                <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+    /* ===== EFECTO GLASS ===== */
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    /* ===== HOVER LIFT ===== */
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(13, 27, 62, 0.12) !important;
+    }
+    
+    .letter-spacing-2 {
+        letter-spacing: 2px;
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .display-3 {
+            font-size: 2.5rem;
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+        }
+    }
+</style>
+
+{% endblock %}

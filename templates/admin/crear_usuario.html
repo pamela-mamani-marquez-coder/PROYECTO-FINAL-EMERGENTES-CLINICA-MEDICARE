@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: white;">
+                <!-- Header con gradiente azul -->
+                <div class="card-header text-center border-0" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); padding: 18px 20px;">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-plus" style="font-size: 1.4rem; color: white;"></i>
+                        <span style="font-weight: 700; font-size: 1.2rem; color: white; letter-spacing: -0.3px;">
+                            Crear Nuevo Usuario
+                        </span>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.8); margin: 3px 0 0 0; font-size: 0.8rem;">
+                        Complete los datos del nuevo usuario
+                    </p>
+                </div>
+
+                <!-- Cuerpo del formulario -->
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('admin.crear_usuario') }}" id="formUsuario">
+                        <!-- Fila: Nombres y Apellidos -->
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="nombres" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-user text-primary me-1"></i> Nombres
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="nombres" name="nombres" 
+                                       placeholder="Nombres" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellidos" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-user text-primary me-1"></i> Apellidos
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="apellidos" name="apellidos" 
+                                       placeholder="Apellidos" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mt-2">
+                            <label for="email" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-envelope text-primary me-1"></i> Email
+                            </label>
+                            <input type="email" class="form-control form-control-sm" id="email" name="email" 
+                                   placeholder="correo@ejemplo.com" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Rol -->
+                        <div class="mt-2">
+                            <label for="rol" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-user-tag text-primary me-1"></i> Rol
+                            </label>
+                            <select class="form-select form-select-sm" id="rol" name="rol" 
+                                    onchange="actualizarUsuario()" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                                <option value="paciente">Paciente</option>
+                                <option value="medico">Médico</option>
+                                <option value="recepcionista">Recepcionista</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <i class="fas fa-info-circle me-1"></i> Selecciona el rol del usuario
+                            </small>
+                        </div>
+
+                        <!-- Usuario generado automáticamente -->
+                        <div class="mt-2">
+                            <label for="username" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-user-circle text-primary me-1"></i> Usuario
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: #f8f9fa; border-radius: 8px 0 0 8px; border: 1px solid #dee2e6;">
+                                    <i class="fas fa-user" style="color: #0d6efd;"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-sm" id="username" name="username" 
+                                       value="{{ username_sugerido }}" readonly 
+                                       style="border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 0.9rem; background: #f8f9fa; border-color: #dee2e6; cursor: not-allowed;">
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <i class="fas fa-info-circle me-1"></i> El usuario se genera automáticamente según el rol
+                            </small>
+                        </div>
+
+                        <!-- Contraseña con validación -->
+                        <div class="mt-2">
+                            <label for="password" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-lock text-primary me-1"></i> Contraseña
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-sm" id="password" name="password" 
+                                       placeholder="Crea una contraseña segura" required 
+                                       style="border-radius: 8px 0 0 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="togglePassword" 
+                                        style="border-radius: 0 8px 8px 0; border-color: #dee2e6;">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Requisitos de contraseña -->
+                            <div class="mt-2 p-2" style="background: #f8f9fa; border-radius: 8px;">
+                                <small class="text-muted d-block mb-1">La contraseña debe cumplir con:</small>
+                                <div id="reqLongitud" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Mínimo 8 caracteres
+                                </div>
+                                <div id="reqMayuscula" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 mayúscula
+                                </div>
+                                <div id="reqMinuscula" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 minúscula
+                                </div>
+                                <div id="reqNumero" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 número
+                                </div>
+                                <div id="reqEspecial" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 carácter especial (!@#$%^&*)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary" id="btnCrear" 
+                                    style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #0d6efd, #0a58ca); border: none; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Crear Usuario
+                            </button>
+                            <a href="{{ url_for('admin.usuarios') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ACTUALIZAR USUARIO SEGÚN ROL
+function actualizarUsuario() {
+    const rol = document.getElementById('rol').value;
+    const usernameInput = document.getElementById('username');
+    
+    fetch(`/admin/next_username?rol=${rol}`)
+        .then(response => response.json())
+        .then(data => {
+            usernameInput.value = data.username;
+        })
+        .catch(() => {
+            const prefijos = {
+                'paciente': 'paciente',
+                'medico': 'medico',
+                'recepcionista': 'recepcionista',
+                'admin': 'admin'
+            };
+            usernameInput.value = prefijos[rol] + Math.floor(Math.random() * 100 + 1);
+        });
+}
+
+// VALIDACIÓN DE CONTRASEÑA EN TIEMPO REAL
+document.getElementById('password').addEventListener('input', function() {
+    const pass = this.value;
+    
+    // Requisitos
+    const reqs = [
+        { id: 'reqLongitud', test: pass.length >= 8, msg: 'Mínimo 8 caracteres' },
+        { id: 'reqMayuscula', test: /[A-Z]/.test(pass), msg: 'Al menos 1 mayúscula' },
+        { id: 'reqMinuscula', test: /[a-z]/.test(pass), msg: 'Al menos 1 minúscula' },
+        { id: 'reqNumero', test: /[0-9]/.test(pass), msg: 'Al menos 1 número' },
+        { id: 'reqEspecial', test: /[!@#$%^&*(),.?":{}|<>]/.test(pass), msg: 'Al menos 1 carácter especial' }
+    ];
+    
+    let todasValidas = true;
+    
+    reqs.forEach(req => {
+        const el = document.getElementById(req.id);
+        if (req.test) {
+            el.style.color = '#28a745';
+            el.innerHTML = `<i class="fas fa-check me-1"></i> ${req.msg}`;
+        } else {
+            el.style.color = '#dc3545';
+            el.innerHTML = `<i class="fas fa-times me-1"></i> ${req.msg}`;
+            todasValidas = false;
+        }
+    });
+    
+    // Activar/desactivar botón según validación
+    document.getElementById('btnCrear').disabled = !todasValidas;
+});
+
+// MOSTRAR/OCULTAR CONTRASEÑA
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const pass = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (pass.type === 'password') {
+        pass.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        pass.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+});
+
+// VALIDACIÓN ANTES DE ENVIAR
+document.getElementById('formUsuario').addEventListener('submit', function(e) {
+    const pass = document.getElementById('password').value;
+    const valida = (
+        pass.length >= 8 &&
+        /[A-Z]/.test(pass) &&
+        /[a-z]/.test(pass) &&
+        /[0-9]/.test(pass) &&
+        /[!@#$%^&*(),.?":{}|<>]/.test(pass)
+    );
+    
+    if (!valida) {
+        e.preventDefault();
+        alert('❌ La contraseña no cumple con los requisitos de seguridad.');
+    }
+});
+
+// DESACTIVAR BOTÓN INICIALMENTE
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('btnCrear').disabled = true;
+});
+</script>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.35) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    input[readonly] {
+        background-color: #f8f9fa !important;
+        cursor: not-allowed !important;
+    }
+    .requisito {
+        transition: all 0.3s ease;
+        padding: 2px 4px;
+    }
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+</style>
+{% endblock %}

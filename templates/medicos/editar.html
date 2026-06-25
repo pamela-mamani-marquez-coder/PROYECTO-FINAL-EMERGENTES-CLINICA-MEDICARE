@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente verde -->
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #059669, #047857);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-edit text-white" style="font-size: 1.2rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Editar Médico
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.8rem;">
+                        Actualice los datos del médico
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('medico.editar', id=medico.id) }}">
+                        <!-- Fila: Nombre y Apellidos -->
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label fw-semibold small text-dark">
+                                    <i class="fas fa-user text-success me-1"></i> Nombre
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="nombre" name="nombre" 
+                                       value="{{ medico.nombre }}" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apellidos" class="form-label fw-semibold small text-dark">
+                                    <i class="fas fa-user text-success me-1"></i> Apellidos
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="apellidos" name="apellidos" 
+                                       value="{{ medico.apellidos }}" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                            </div>
+                        </div>
+
+                        <!-- Especialidad -->
+                        <div class="mt-2">
+                            <label for="especialidad_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-stethoscope text-success me-1"></i> Especialidad
+                            </label>
+                            <select class="form-select form-select-sm" id="especialidad_id" name="especialidad_id" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                                {% for especialidad in especialidades %}
+                                <option value="{{ especialidad.id }}" {% if especialidad.id == medico.especialidad_id %}selected{% endif %}>
+                                    {{ especialidad.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- SALA / CONSULTORIO -->
+                        <div class="mt-2">
+                            <label for="sala_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-door-open text-success me-1"></i> Consultorio / Sala
+                            </label>
+                            <select class="form-select form-select-sm" id="sala_id" name="sala_id" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                                <option value="">Sin sala asignada</option>
+                                {% for sala in salas %}
+                                <option value="{{ sala.id }}" {% if sala.id == medico.sala_id %}selected{% endif %}>
+                                    Sala {{ sala.numero }} - {{ sala.nombre or 'Sin nombre' }} ({{ sala.ubicacion or 'Sin ubicación' }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <i class="fas fa-info-circle me-1"></i> Selecciona la sala asignada al médico
+                            </small>
+                        </div>
+
+                        <!-- Teléfono y Email -->
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-6">
+                                <label for="telefono" class="form-label fw-semibold small text-dark">
+                                    <i class="fas fa-phone text-success me-1"></i> Teléfono
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="telefono" name="telefono" 
+                                       value="{{ medico.telefono or '' }}" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold small text-dark">
+                                    <i class="fas fa-envelope text-success me-1"></i> Email
+                                </label>
+                                <input type="email" class="form-control form-control-sm" id="email" name="email" 
+                                       value="{{ medico.email or '' }}" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                            </div>
+                        </div>
+
+                        <!-- Horario de Atención -->
+                        <div class="mt-2">
+                            <label for="horario_atencion" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-clock text-success me-1"></i> Horario de Atención
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="horario_atencion" name="horario_atencion" 
+                                   value="{{ medico.horario_atencion or '' }}" placeholder="Lun-Vie 08:00-18:00" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #d1e7dd;">
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-success" style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #059669, #047857); border: none; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Actualizar Médico
+                            </button>
+                            <a href="{{ url_for('medico.index') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #059669;
+        box-shadow: 0 0 0 0.15rem rgba(5, 150, 105, 0.2);
+    }
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

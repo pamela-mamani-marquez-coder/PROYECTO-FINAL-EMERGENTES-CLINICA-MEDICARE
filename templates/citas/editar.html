@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header con gradiente amarillo -->
+                <div class="card-header text-center border-0 py-3 bg-gradient-yellow">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-edit text-white fs-5"></i>
+                        <span class="fw-bold text-white fs-6">
+                            Editar Cita
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0 small">
+                        #{{ cita.id }}
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('cita.editar', id=cita.id) }}">
+                        <!-- Paciente -->
+                        <div class="mb-3">
+                            <label for="paciente_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user-injured text-warning me-1"></i> Paciente
+                            </label>
+                            <select class="form-select" id="paciente_id" name="paciente_id" required>
+                                {% for paciente in pacientes %}
+                                <option value="{{ paciente.id }}" {% if paciente.id == cita.paciente_id %}selected{% endif %}>
+                                    {{ paciente.nombres }} {{ paciente.apellidos }} ({{ paciente.ci }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Médico -->
+                        <div class="mb-3">
+                            <label for="medico_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user-md text-warning me-1"></i> Médico
+                            </label>
+                            <select class="form-select" id="medico_id" name="medico_id" required>
+                                {% for medico in medicos %}
+                                <option value="{{ medico.id }}" {% if medico.id == cita.medico_id %}selected{% endif %}>
+                                    {{ medico.nombre }} {{ medico.apellidos }} - {{ medico.especialidad.nombre if medico.especialidad else 'Sin especialidad' }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Sala -->
+                        <div class="mb-3">
+                            <label for="sala_id" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-door-open text-warning me-1"></i> Sala
+                            </label>
+                            <select class="form-select" id="sala_id" name="sala_id" required>
+                                {% for sala in salas %}
+                                <option value="{{ sala.id }}" {% if sala.id == cita.sala_id %}selected{% endif %}>
+                                    Sala {{ sala.numero }} - {{ sala.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Fecha y Hora -->
+                        <div class="mb-3">
+                            <label for="fecha_hora" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-calendar-alt text-warning me-1"></i> Fecha y Hora
+                            </label>
+                            <input type="datetime-local" class="form-control" id="fecha_hora" name="fecha_hora" 
+                                   value="{{ cita.fecha_hora.strftime('%Y-%m-%dT%H:%M') if cita.fecha_hora else '' }}"
+                                   required>
+                        </div>
+
+                        <!-- Motivo -->
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-comment text-warning me-1"></i> Motivo
+                            </label>
+                            <textarea class="form-control" id="motivo" name="motivo" 
+                                      rows="2">{{ cita.motivo or '' }}</textarea>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label for="estado" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-circle text-warning me-1"></i> Estado
+                            </label>
+                            <select class="form-select" id="estado" name="estado">
+                                <option value="pendiente" {% if cita.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="confirmada" {% if cita.estado == 'confirmada' %}selected{% endif %}>Confirmada</option>
+                                <option value="completada" {% if cita.estado == 'completada' %}selected{% endif %}>Completada</option>
+                                <option value="cancelada" {% if cita.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                            </select>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn rounded-pill py-2 fw-semibold bg-gradient-yellow text-white border-0 shadow-sm">
+                                <i class="fas fa-save me-1"></i>Actualizar Cita
+                            </button>
+                            <a href="{{ url_for('cita.index') }}" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .bg-gradient-yellow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .form-control, .form-select {
+        font-size: 0.95rem !important;
+        padding: 0.6rem 0.9rem !important;
+    }
+    .btn {
+        font-size: 0.95rem !important;
+        padding: 0.6rem 1.2rem !important;
+    }
+    .small {
+        font-size: 0.85rem !important;
+    }
+    .fs-6 {
+        font-size: 1.1rem !important;
+    }
+    .fs-5 {
+        font-size: 1.2rem !important;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

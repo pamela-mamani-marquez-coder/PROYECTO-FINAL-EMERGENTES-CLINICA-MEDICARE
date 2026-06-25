@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Columna Izquierda: Perfil del Paciente -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-circle text-white" style="font-size: 1.3rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1rem;">
+                            Mi Perfil
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <!-- Avatar -->
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-user" style="font-size: 2.5rem; color: #0d1b3e;"></i>
+                    </div>
+                    <h5 class="fw-bold mt-3 mb-0">{{ paciente.nombres }} {{ paciente.apellidos }}</h5>
+                    <span class="badge bg-info rounded-pill px-3 py-1 mt-1" style="font-size: 0.75rem;">
+                        <i class="fas fa-id-card me-1"></i> CI: {{ paciente.ci }}
+                    </span>
+                    <hr>
+                    <div class="text-start" style="font-size: 0.9rem;">
+                        <p><i class="fas fa-phone" style="color: #0d1b3e; width: 25px;"></i> {{ paciente.telefono or 'No registrado' }}</p>
+                        <p><i class="fas fa-envelope" style="color: #0d1b3e; width: 25px;"></i> {{ paciente.email or 'No registrado' }}</p>
+                        <p><i class="fas fa-shield-alt" style="color: #0d1b3e; width: 25px;"></i> {{ paciente.seguro_medico or 'Sin seguro' }}</p>
+                        <p><i class="fas fa-allergies" style="color: #0d1b3e; width: 25px;"></i> {{ paciente.alergias or 'Ninguna' }}</p>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 mt-3">
+                        
+                        <a href="{{ url_for('cita.crear') }}" class="btn btn-sm rounded-pill" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a); color: white; border: none;">
+                            <i class="fas fa-calendar-plus me-1"></i>Agendar Cita
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Actividad Reciente -->
+        <div class="col-lg-8">
+            <!-- Próximas Citas -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-calendar-check text-white" style="font-size: 1.1rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1rem;">
+                            Próximas Citas
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if proximas_citas %}
+                    <ul class="list-unstyled" style="font-size: 0.9rem;">
+                        {% for cita in proximas_citas %}
+                        <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-semibold">{{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</span>
+                                <span class="text-muted ms-2">{{ cita.motivo or 'Sin motivo' }}</span>
+                            </div>
+                            <span class="badge {% if cita.estado == 'confirmada' %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+                                {{ cita.estado|title }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ url_for('cita.index') }}" class="btn btn-sm rounded-pill" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a); color: white; border: none;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver todas mis citas
+                    </a>
+                    {% else %}
+                    
+                    <div class="text-center py-3">
+                        <i class="fas fa-calendar-plus" style="font-size: 2.5rem; color: #0d1b3e; opacity: 0.2; display: block; margin-bottom: 10px;"></i>
+                        <p class="text-muted mb-2" style="font-size: 0.95rem;">No tienes citas programadas.</p>
+                        <p class="text-muted mb-3" style="font-size: 0.85rem;">Agenda una cita para recibir atención médica.</p>
+                        <a href="{{ url_for('cita.crear') }}" class="btn btn-sm rounded-pill" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a); color: white; border: none;">
+                            <i class="fas fa-plus me-1"></i>Agendar Cita
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Facturas Recientes -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-file-invoice-dollar text-white" style="font-size: 1.1rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1rem;">
+                            Facturas Recientes
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if facturas_recientes %}
+                    <ul class="list-unstyled" style="font-size: 0.9rem;">
+                        {% for factura in facturas_recientes %}
+                        <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-semibold">{{ factura.numero_factura }}</span>
+                                <span class="text-muted ms-2">Bs. {{ "%.2f"|format(factura.monto_total) }}</span>
+                            </div>
+                            <span class="badge {% if factura.estado_pago == 'pagado' %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+                                {{ factura.estado_pago|title }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ url_for('factura.mis_facturas') }}" class="btn btn-sm rounded-pill" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a); color: white; border: none;">
+                          <i class="fas fa-arrow-right me-1"></i>Ver todas mis facturas
+                    </a>
+
+                    {% else %}
+                   
+                    <div class="text-center py-3">
+                        <i class="fas fa-file-invoice" style="font-size: 2.5rem; color: #0d1b3e; opacity: 0.2; display: block; margin-bottom: 10px;"></i>
+                        <p class="text-muted mb-2" style="font-size: 0.95rem;">No hay facturas registradas.</p>
+                        <p class="text-muted" style="font-size: 0.85rem;">Las facturas se generan al completar tus citas.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Últimas Citas -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-history text-white" style="font-size: 1.1rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1rem;">
+                            Historial de Citas
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if citas_pasadas %}
+                    <ul class="list-unstyled" style="font-size: 0.9rem;">
+                        {% for cita in citas_pasadas %}
+                        <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-semibold">{{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</span>
+                                <span class="text-muted ms-2">{{ cita.motivo or 'Sin motivo' }}</span>
+                            </div>
+                            <span class="badge {% if cita.estado == 'completada' %}bg-success{% elif cita.estado == 'cancelada' %}bg-danger{% else %}bg-secondary{% endif %} rounded-pill">
+                                {{ cita.estado|title }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ url_for('cita.index') }}" class="btn btn-sm rounded-pill" style="background: linear-gradient(135deg, #0d1b3e, #1a3a7a); color: white; border: none;">
+                        <i class="fas fa-arrow-right me-1"></i>Ver historial completo
+                    </a>
+                    {% else %}
+                   
+                    <div class="text-center py-3">
+                        <i class="fas fa-calendar-alt" style="font-size: 2.5rem; color: #0d1b3e; opacity: 0.2; display: block; margin-bottom: 10px;"></i>
+                        <p class="text-muted mb-2" style="font-size: 0.95rem;">Aún no tienes citas en tu historial.</p>
+                        <p class="text-muted" style="font-size: 0.85rem;">¡Agenda tu primera cita y comienza a cuidar tu salud!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

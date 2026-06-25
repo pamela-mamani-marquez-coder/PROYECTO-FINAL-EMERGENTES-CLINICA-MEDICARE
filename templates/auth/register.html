@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="card-header text-center border-0 py-2" style="background: linear-gradient(135deg, #0d6efd, #0a58ca);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-plus text-white" style="font-size: 1.1rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1rem;">
+                            Crear Cuenta
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.7rem;">
+                        Regístrate como paciente en MediCare
+                    </p>
+                </div>
+
+                <div class="card-body p-3">
+                    <form method="POST" action="{{ url_for('auth.register') }}" id="formRegistro" autocomplete="off">
+                        <!-- Nombres -->
+                        <div class="mt-2">
+                            <label for="nombres" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user text-primary me-1"></i> Nombres
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="nombres" name="nombres" 
+                                   placeholder="Ej: Pamela" required autocomplete="off"
+                                   style="border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="mt-2">
+                            <label for="apellidos" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-user text-primary me-1"></i> Apellidos
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="apellidos" name="apellidos" 
+                                   placeholder="Ej: Mamani" required autocomplete="off"
+                                   style="border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mt-2">
+                            <label for="email" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-envelope text-primary me-1"></i> Email
+                            </label>
+                            <input type="email" class="form-control form-control-sm" id="email" name="email" 
+                                   placeholder="tu@email.com" required autocomplete="off"
+                                   style="border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mt-2">
+                            <label for="password" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-lock text-primary me-1"></i> Contraseña
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-sm" id="password" name="password" 
+                                       placeholder="Mínimo 8 caracteres" required autocomplete="new-password"
+                                       style="border-radius: 8px 0 0 8px; padding: 6px 10px; font-size: 0.85rem; border-color: #dee2e6;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="togglePassword" 
+                                        style="border-radius: 0 8px 8px 0; border-color: #dee2e6;">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            <!-- Requisitos de contraseña -->
+                            <div class="mt-1 p-1" id="requisitosContainer" style="background: #f8f9fa; border-radius: 6px; display: none; border: 1px solid #dee2e6;">
+                                <small class="text-muted d-block mb-1" style="font-size: 0.6rem;">La contraseña debe cumplir con:</small>
+                                <div id="reqLongitud" class="requisito" style="font-size: 0.6rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Mínimo 8 caracteres
+                                </div>
+                                <div id="reqMayuscula" class="requisito" style="font-size: 0.6rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 mayúscula
+                                </div>
+                                <div id="reqMinuscula" class="requisito" style="font-size: 0.6rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 minúscula
+                                </div>
+                                <div id="reqNumero" class="requisito" style="font-size: 0.6rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 número
+                                </div>
+                                <div id="reqEspecial" class="requisito" style="font-size: 0.6rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 carácter especial (!@#$%^&*)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje informativo -->
+                        <div class="mt-2 p-2" style="background: #e8f0fe; border-radius: 8px; border-left: 4px solid #0d6efd;">
+                            <small class="text-primary" style="font-size: 0.7rem;">
+                                <i class="fas fa-info-circle me-1"></i> 
+                                Te estás registrando como <strong>Paciente</strong>. 
+                                Tu usuario se generará automáticamente.
+                            </small>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary btn-sm rounded-pill py-2 fw-semibold" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); border: none; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2); transition: all 0.3s ease;">
+                                <i class="fas fa-user-plus me-1"></i>Crear Cuenta
+                            </button>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                        </div>
+
+                        <!-- Enlace a login -->
+                        <div class="text-center mt-2">
+                            <p style="color: #4a6a8a; margin: 0; font-size: 0.75rem;">
+                                ¿Ya tienes cuenta? 
+                                <a href="{{ url_for('auth.login') }}" style="color: #0d6efd; font-weight: 600; text-decoration: none;">
+                                    Inicia sesión aquí <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mostrar/Ocultar Contraseña
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const pass = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (pass.type === 'password') {
+            pass.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            pass.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    });
+
+    // Validación de contraseña en tiempo real
+    document.getElementById('password').addEventListener('input', function() {
+        const pass = this.value;
+        const container = document.getElementById('requisitosContainer');
+        
+        if (pass === '') {
+            container.style.display = 'none';
+            return;
+        } else {
+            container.style.display = 'block';
+        }
+        
+        const reqs = [
+            { id: 'reqLongitud', test: pass.length >= 8, msg: 'Mínimo 8 caracteres' },
+            { id: 'reqMayuscula', test: /[A-Z]/.test(pass), msg: 'Al menos 1 mayúscula' },
+            { id: 'reqMinuscula', test: /[a-z]/.test(pass), msg: 'Al menos 1 minúscula' },
+            { id: 'reqNumero', test: /[0-9]/.test(pass), msg: 'Al menos 1 número' },
+            { id: 'reqEspecial', test: /[!@#$%^&*(),.?":{}|<>]/.test(pass), msg: 'Al menos 1 carácter especial' }
+        ];
+        
+        reqs.forEach(req => {
+            const el = document.getElementById(req.id);
+            if (req.test) {
+                el.style.color = '#28a745';
+                el.innerHTML = `<i class="fas fa-check me-1"></i> ${req.msg}`;
+            } else {
+                el.style.color = '#dc3545';
+                el.innerHTML = `<i class="fas fa-times me-1"></i> ${req.msg}`;
+            }
+        });
+    });
+
+    // Validación antes de enviar
+    document.getElementById('formRegistro').addEventListener('submit', function(e) {
+        const pass = document.getElementById('password').value;
+        const valida = (
+            pass.length >= 8 &&
+            /[A-Z]/.test(pass) &&
+            /[a-z]/.test(pass) &&
+            /[0-9]/.test(pass) &&
+            /[!@#$%^&*(),.?":{}|<>]/.test(pass)
+        );
+        
+        if (!valida) {
+            e.preventDefault();
+            alert('❌ La contraseña no cumple con los requisitos de seguridad.');
+            return false;
+        }
+    });
+</script>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    .requisito {
+        transition: all 0.3s ease;
+        padding: 1px 4px;
+    }
+    .form-control-sm, .form-select-sm {
+        padding: 6px 10px !important;
+        font-size: 0.85rem !important;
+    }
+    input::-webkit-contacts-auto-fill-button {
+        display: none !important;
+    }
+    input::-webkit-credentials-auto-fill-button {
+        display: none !important;
+    }
+</style>
+{% endblock %}

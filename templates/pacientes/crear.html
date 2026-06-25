@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: white;">
+                <!-- Header con gradiente naranja -->
+                <div class="card-header text-center border-0" style="background: linear-gradient(135deg, #ea580c, #c2410c); padding: 18px 20px;">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-injured" style="font-size: 1.4rem; color: white;"></i>
+                        <span style="font-weight: 700; font-size: 1.2rem; color: white; letter-spacing: -0.3px;">
+                            Nuevo Paciente
+                        </span>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.8); margin: 3px 0 0 0; font-size: 0.8rem;">
+                        Complete los datos del nuevo paciente
+                    </p>
+                </div>
+
+                <!-- Cuerpo del formulario -->
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('paciente.crear') }}">
+                        <!-- Fila: CI y Nombres -->
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label for="ci" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-id-card text-warning me-1"></i> CI
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="ci" name="ci" 
+                                       placeholder="CI" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="nombres" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-user text-warning me-1"></i> Nombres
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="nombres" name="nombres" 
+                                       placeholder="Nombres" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="apellidos" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-user text-warning me-1"></i> Apellidos
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="apellidos" name="apellidos" 
+                                       placeholder="Apellidos" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                        </div>
+
+                        <!-- Fecha Nacimiento y Género -->
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-6">
+                                <label for="fecha_nacimiento" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-calendar text-warning me-1"></i> Fecha Nacimiento
+                                </label>
+                                <input type="date" class="form-control form-control-sm" id="fecha_nacimiento" name="fecha_nacimiento" 
+                                       style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="genero" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-venus-mars text-warning me-1"></i> Género
+                                </label>
+                                <select class="form-select form-select-sm" id="genero" name="genero" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Teléfono y Email -->
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-6">
+                                <label for="telefono" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-phone text-warning me-1"></i> Teléfono
+                                </label>
+                                <input type="text" class="form-control form-control-sm" id="telefono" name="telefono" 
+                                       placeholder="Teléfono" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-envelope text-warning me-1"></i> Email
+                                </label>
+                                <input type="email" class="form-control form-control-sm" id="email" name="email" 
+                                       placeholder="correo@ejemplo.com" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                            </div>
+                        </div>
+
+                        <!-- Seguro Médico -->
+                        <div class="mt-2">
+                            <label for="seguro_medico" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-shield-alt text-warning me-1"></i> Seguro Médico
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="seguro_medico" name="seguro_medico" 
+                                   placeholder="Ej: Salud Total" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;">
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="mt-2">
+                            <label for="direccion" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-map-marker-alt text-warning me-1"></i> Dirección
+                            </label>
+                            <textarea class="form-control form-control-sm" id="direccion" name="direccion" 
+                                      rows="2" placeholder="Dirección" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;"></textarea>
+                        </div>
+
+                        <!-- Alergias -->
+                        <div class="mt-2">
+                            <label for="alergias" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-allergies text-warning me-1"></i> Alergias
+                            </label>
+                            <textarea class="form-control form-control-sm" id="alergias" name="alergias" 
+                                      rows="2" placeholder="Alergias (si no tiene, dejar en blanco)" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #fed7aa;"></textarea>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-warning" style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; border: none; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Guardar Paciente
+                            </button>
+                            <a href="{{ url_for('paciente.index') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #ea580c;
+        box-shadow: 0 0 0 0.15rem rgba(234, 88, 12, 0.2);
+    }
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

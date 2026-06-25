@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-door-open text-white" style="font-size: 1.2rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Nueva Sala
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.8rem;">
+                        Complete los datos de la sala
+                    </p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('admin.crear_sala') }}">
+                        <!-- Número -->
+                        <div class="mb-3">
+                            <label for="numero" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-hashtag text-warning me-1"></i> Número
+                            </label>
+                            <input type="text" class="form-control" id="numero" name="numero" 
+                                   placeholder="Ej: 101" required style="border-radius: 8px; border-color: #fcd34d;">
+                        </div>
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-tag text-warning me-1"></i> Nombre
+                            </label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   placeholder="Ej: Consultorio 1" style="border-radius: 8px; border-color: #fcd34d;">
+                        </div>
+
+                        <!-- Ubicación -->
+                        <div class="mb-3">
+                            <label for="ubicacion" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-map-marker-alt text-warning me-1"></i> Ubicación
+                            </label>
+                            <input type="text" class="form-control" id="ubicacion" name="ubicacion" 
+                                   placeholder="Ej: Planta 1" style="border-radius: 8px; border-color: #fcd34d;">
+                        </div>
+
+                        <!-- Capacidad -->
+                        <div class="mb-3">
+                            <label for="capacidad" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-users text-warning me-1"></i> Capacidad
+                            </label>
+                            <input type="number" class="form-control" id="capacidad" name="capacidad" 
+                                   value="1" min="1" style="border-radius: 8px; border-color: #fcd34d;">
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label for="estado" class="form-label fw-semibold small text-dark">
+                                <i class="fas fa-circle text-warning me-1"></i> Estado
+                            </label>
+                            <select class="form-select" id="estado" name="estado" style="border-radius: 8px; border-color: #fcd34d;">
+                                <option value="disponible">Disponible</option>
+                                <option value="ocupada">Ocupada</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                            </select>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn rounded-pill py-2 fw-semibold bg-gradient-yellow text-white border-0 shadow-sm">
+                                <i class="fas fa-save me-1"></i>Guardar Sala
+                            </button>
+                            <a href="{{ url_for('admin.salas') }}" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-arrow-left me-1"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .bg-gradient-yellow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 0.15rem rgba(245, 158, 11, 0.2);
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

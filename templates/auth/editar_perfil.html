@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="card-header text-center border-0 py-3" style="background: linear-gradient(135deg, #0d6efd, #0a58ca);">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-edit text-white" style="font-size: 1.3rem;"></i>
+                        <span class="fw-bold text-white" style="font-size: 1.1rem;">
+                            Editar Perfil
+                        </span>
+                    </div>
+                    <p class="text-white-50 mb-0" style="font-size: 0.75rem;">
+                        Actualice sus datos personales
+                    </p>
+                </div>
+
+                <!-- Cuerpo del formulario -->
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('auth.editar_perfil') }}" id="formEditarPerfil">
+                        <!-- Nombres -->
+                        <div class="mt-2">
+                            <label for="nombres" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.8rem;">
+                                <i class="fas fa-user text-primary me-1"></i> Nombres
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="nombres" name="nombres" 
+                                   value="{{ usuario.nombres }}" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Apellidos -->
+                        <div class="mt-2">
+                            <label for="apellidos" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.8rem;">
+                                <i class="fas fa-user text-primary me-1"></i> Apellidos
+                            </label>
+                            <input type="text" class="form-control form-control-sm" id="apellidos" name="apellidos" 
+                                   value="{{ usuario.apellidos }}" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mt-2">
+                            <label for="email" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.8rem;">
+                                <i class="fas fa-envelope text-primary me-1"></i> Email
+                            </label>
+                            <input type="email" class="form-control form-control-sm" id="email" name="email" 
+                                   value="{{ usuario.email }}" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                        </div>
+
+                        <hr style="border-color: #dee2e6;">
+
+                        <!-- NUEVA CONTRASEÑA -->
+                        <div class="mt-2">
+                            <label for="nueva_password" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.8rem;">
+                                <i class="fas fa-key text-primary me-1"></i> Nueva Contraseña
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-sm" id="nueva_password" name="nueva_password" 
+                                       placeholder="Dejar vacío para no cambiar" 
+                                       style="border-radius: 8px 0 0 8px; padding: 8px 12px; font-size: 0.9rem; border-color: #dee2e6;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="togglePassword" 
+                                        style="border-radius: 0 8px 8px 0; border-color: #dee2e6;">
+                                    <i class="fas fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <i class="fas fa-info-circle me-1"></i> Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial
+                            </small>
+                            
+                            <!-- Requisitos de contraseña -->
+                            <div class="mt-2 p-2" id="requisitosContainer" style="background: #f8f9fa; border-radius: 8px; display: none;">
+                                <small class="text-muted d-block mb-1">La contraseña debe cumplir con:</small>
+                                <div id="reqLongitud" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Mínimo 8 caracteres
+                                </div>
+                                <div id="reqMayuscula" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 mayúscula
+                                </div>
+                                <div id="reqMinuscula" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 minúscula
+                                </div>
+                                <div id="reqNumero" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 número
+                                </div>
+                                <div id="reqEspecial" class="requisito" style="font-size: 0.75rem; color: #dc3545;">
+                                    <i class="fas fa-times me-1"></i> Al menos 1 carácter especial (!@#$%^&*)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary" 
+                                    style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #0d6efd, #0a58ca); border: none; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                            <a href="{{ url_for('auth.perfil') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// MOSTRAR/OCULTAR CONTRASEÑA
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const pass = document.getElementById('nueva_password');
+    const icon = document.getElementById('eyeIcon');
+    if (pass.type === 'password') {
+        pass.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        pass.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+});
+
+// MOSTRAR REQUISITOS CUANDO SE ESCRIBE EN CONTRASEÑA
+const passwordInput = document.getElementById('nueva_password');
+const requisitosContainer = document.getElementById('requisitosContainer');
+
+passwordInput.addEventListener('focus', function() {
+    if (this.value !== '') {
+        requisitosContainer.style.display = 'block';
+    }
+});
+
+passwordInput.addEventListener('blur', function() {
+    if (this.value === '') {
+        requisitosContainer.style.display = 'none';
+    }
+});
+
+// VALIDACIÓN DE CONTRASEÑA EN TIEMPO REAL
+passwordInput.addEventListener('input', function() {
+    const pass = this.value;
+    
+    if (pass === '') {
+        requisitosContainer.style.display = 'none';
+        return;
+    } else {
+        requisitosContainer.style.display = 'block';
+    }
+    
+    const reqs = [
+        { id: 'reqLongitud', test: pass.length >= 8, msg: 'Mínimo 8 caracteres' },
+        { id: 'reqMayuscula', test: /[A-Z]/.test(pass), msg: 'Al menos 1 mayúscula' },
+        { id: 'reqMinuscula', test: /[a-z]/.test(pass), msg: 'Al menos 1 minúscula' },
+        { id: 'reqNumero', test: /[0-9]/.test(pass), msg: 'Al menos 1 número' },
+        { id: 'reqEspecial', test: /[!@#$%^&*(),.?":{}|<>]/.test(pass), msg: 'Al menos 1 carácter especial' }
+    ];
+    
+    reqs.forEach(req => {
+        const el = document.getElementById(req.id);
+        if (req.test) {
+            el.style.color = '#28a745';
+            el.innerHTML = `<i class="fas fa-check me-1"></i> ${req.msg}`;
+        } else {
+            el.style.color = '#dc3545';
+            el.innerHTML = `<i class="fas fa-times me-1"></i> ${req.msg}`;
+        }
+    });
+});
+
+// VALIDACIÓN ANTES DE ENVIAR
+document.getElementById('formEditarPerfil').addEventListener('submit', function(e) {
+    const pass = document.getElementById('nueva_password').value;
+    
+    if (pass === '') {
+        return true;
+    }
+    
+    const valida = (
+        pass.length >= 8 &&
+        /[A-Z]/.test(pass) &&
+        /[a-z]/.test(pass) &&
+        /[0-9]/.test(pass) &&
+        /[!@#$%^&*(),.?":{}|<>]/.test(pass)
+    );
+    
+    if (!valida) {
+        e.preventDefault();
+        alert('❌ La contraseña no cumple con los requisitos de seguridad.');
+    }
+});
+</script>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.35) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    .requisito {
+        transition: all 0.3s ease;
+        padding: 2px 4px;
+    }
+</style>
+{% endblock %}

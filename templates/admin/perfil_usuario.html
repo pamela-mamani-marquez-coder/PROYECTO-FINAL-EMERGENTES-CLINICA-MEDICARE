@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="card-header text-center border-0 bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-user-circle fs-2"></i>
+                        <span class="fw-bold fs-4">
+                            Perfil de Usuario
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Avatar -->
+                    <div class="text-center mb-4">
+                        <div class="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-user text-white" style="font-size: 3.5rem;"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mt-3">{{ usuario.nombres }} {{ usuario.apellidos }}</h4>
+                        <span class="badge 
+                            {% if usuario.rol == 'admin' %}bg-danger
+                            {% elif usuario.rol == 'medico' %}bg-success
+                            {% elif usuario.rol == 'recepcionista' %}bg-warning text-dark
+                            {% else %}bg-info{% endif %} 
+                            rounded-pill px-3 py-2">
+                            {{ usuario.rol|title }}
+                        </span>
+                    </div>
+
+                    <hr>
+
+                    <!-- Información -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-user-circle me-1"></i>Usuario</small>
+                                <strong>{{ usuario.username }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-envelope me-1"></i>Email</small>
+                                <strong>{{ usuario.email }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-calendar me-1"></i>Fecha Registro</small>
+                                <strong>{{ usuario.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block"><i class="fas fa-circle me-1"></i>Estado</small>
+                                <span class="badge {% if usuario.activo %}bg-success{% else %}bg-secondary{% endif %} rounded-pill px-3 py-2">
+                                    {{ 'Activo' if usuario.activo else 'Inactivo' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Botones -->
+                    <div class="d-flex gap-3 mt-3 justify-content-center">
+                        <a href="{{ url_for('admin.usuarios') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                        <a href="{{ url_for('admin.editar_usuario', id=usuario.id) }}" class="btn btn-primary rounded-pill px-4 py-2">
+                            <i class="fas fa-edit me-2"></i>Editar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    }
+    .rounded-4 {
+        border-radius: 1rem;
+    }
+    .rounded-3 {
+        border-radius: 0.5rem;
+    }
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    .text-dark {
+        color: #0d1b3e !important;
+    }
+    .fs-2 {
+        font-size: 2rem !important;
+    }
+    .fs-4 {
+        font-size: 1.5rem !important;
+    }
+</style>
+{% endblock %}

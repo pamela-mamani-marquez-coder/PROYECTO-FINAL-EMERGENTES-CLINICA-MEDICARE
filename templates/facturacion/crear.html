@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: white;">
+                <!-- Header con gradiente morado -->
+                <div class="card-header text-center border-0" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); padding: 18px 20px;">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-file-invoice" style="font-size: 1.4rem; color: white;"></i>
+                        <span style="font-weight: 700; font-size: 1.2rem; color: white; letter-spacing: -0.3px;">
+                            Generar Factura
+                        </span>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.8); margin: 3px 0 0 0; font-size: 0.8rem;">
+                        Factura para la cita #{{ cita.id }}
+                    </p>
+                </div>
+
+                <!-- Cuerpo del formulario -->
+                <div class="card-body p-4">
+                    <!-- Resumen de la cita -->
+                    <div class="row g-2 mb-3 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Paciente</small>
+                            <strong style="font-size: 0.9rem;">{{ cita.paciente.nombres if cita.paciente else 'N/A' }} 
+                                   {{ cita.paciente.apellidos if cita.paciente else '' }}</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Médico</small>
+                            <strong style="font-size: 0.9rem;">{{ cita.medico.nombre_completo() if cita.medico else 'N/A' }}</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Fecha de la cita</small>
+                            <strong style="font-size: 0.9rem;">{{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') if cita.fecha_hora else 'N/A' }}</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block" style="font-size: 0.75rem;">Motivo</small>
+                            <strong style="font-size: 0.9rem;">{{ cita.motivo or 'Sin motivo' }}</strong>
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        <!-- Monto y Método de Pago -->
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="monto_total" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-dollar-sign" style="color: #7c3aed; margin-right: 6px;"></i> Monto Total (Bs.)
+                                </label>
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="monto_total" name="monto_total" 
+                                       placeholder="Ej: 150.00" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #ddd6fe;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="metodo_pago" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                    <i class="fas fa-credit-card" style="color: #7c3aed; margin-right: 6px;"></i> Método de Pago
+                                </label>
+                                <select class="form-select form-select-sm" id="metodo_pago" name="metodo_pago" required style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #ddd6fe;">
+                                    <option value="">Seleccionar método</option>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                                    <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                                    <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                                    <option value="Seguro Médico">Seguro Médico</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Estado del Pago -->
+                        <div class="mt-2">
+                            <label for="estado_pago" class="form-label fw-semibold" style="color: #0d1b3e; font-size: 0.85rem;">
+                                <i class="fas fa-circle" style="color: #7c3aed; margin-right: 6px;"></i> Estado del Pago
+                            </label>
+                            <select class="form-select form-select-sm" id="estado_pago" name="estado_pago" style="border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; border: 1px solid #ddd6fe;">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="pagado">Pagado</option>
+                            </select>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn" style="border-radius: 50px; padding: 10px; font-weight: 600; font-size: 0.9rem; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); transition: all 0.3s ease;">
+                                <i class="fas fa-save me-2"></i>Generar Factura
+                            </button>
+                            <a href="{{ url_for('factura.index') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 10px; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 0.15rem rgba(124, 58, 237, 0.2);
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4) !important;
+    }
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 style="font-weight: 800; color: #0d1b3e;">
+                <i class="fas fa-chart-simple" style="color: #2563eb; margin-right: 10px;"></i>Dashboard Recepcionista
+            </h1>
+            <p style="color: #4a6a8a; margin: 0;">Panel de control para la gestión de pacientes y citas</p>
+        </div>
+        <span class="badge" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; padding: 8px 20px; border-radius: 50px;">
+            <i class="fas fa-user-tie me-1"></i> {{ usuario.rol|title }}
+        </span>
+    </div>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="opacity: 0.8; font-size: 0.85rem;">Pacientes</p>
+                            <h2 class="display-5 fw-bold">{{ total_pacientes }}</h2>
+                        </div>
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #28a745, #1e7e34); color: white;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="opacity: 0.8; font-size: 0.85rem;">Citas Hoy</p>
+                            <h2 class="display-5 fw-bold">{{ total_citas_hoy }}</h2>
+                        </div>
+                        <i class="fas fa-calendar-day fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="opacity: 0.8; font-size: 0.85rem;">Citas Pendientes</p>
+                            <h2 class="display-5 fw-bold">{{ citas_pendientes }}</h2>
+                        </div>
+                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Próximas citas -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header border-0" style="background: linear-gradient(135deg, #0d6efd, #0a58ca); color: white; border-radius: 16px 16px 0 0; padding: 15px 20px;">
+                    <i class="fas fa-calendar-check me-2"></i> Próximas Citas
+                </div>
+                <div class="card-body p-4">
+                    {% if proximas_citas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Médico</th>
+                                    <th>Fecha/Hora</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cita in proximas_citas %}
+                                <tr>
+                                    <td>{{ cita.paciente.nombres if cita.paciente else 'N/A' }} {{ cita.paciente.apellidos if cita.paciente else '' }}</td>
+                                    <td>{{ cita.medico.nombre_completo() if cita.medico else 'N/A' }}</td>
+                                    <td>{{ cita.fecha_hora.strftime('%d/%m/%Y %H:%M') if cita.fecha_hora else 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if cita.estado == 'confirmada' %}bg-success
+                                            {% elif cita.estado == 'pendiente' %}bg-warning text-dark
+                                            {% elif cita.estado == 'completada' %}bg-info text-white
+                                            {% else %}bg-danger{% endif %} rounded-pill">
+                                            {{ cita.estado|upper }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No hay citas programadas próximamente.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row g-4 mt-3">
+        <div class="col-md-3">
+            <a href="{{ url_for('paciente.crear') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <i class="fas fa-user-plus fa-2x text-primary"></i>
+                    <p class="mt-2 fw-semibold" style="color: #0d1b3e;">Nuevo Paciente</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('cita.crear') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <i class="fas fa-calendar-plus fa-2x text-success"></i>
+                    <p class="mt-2 fw-semibold" style="color: #0d1b3e;">Agendar Cita</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('factura.seleccionar') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <i class="fas fa-file-invoice fa-2x text-warning"></i>
+                    <p class="mt-2 fw-semibold" style="color: #0d1b3e;">Nueva Factura</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{{ url_for('paciente.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 16px; transition: all 0.3s ease;">
+                    <i class="fas fa-users fa-2x text-info"></i>
+                    <p class="mt-2 fw-semibold" style="color: #0d1b3e;">Ver Pacientes</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+    }
+    .card a {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
+{% endblock %}

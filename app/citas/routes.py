@@ -37,45 +37,36 @@ def index():
     if estado:
         query = query.filter(Cita.estado == estado)
     
-    # BÚSQUEDA MEJORADA Y CORREGIDA
+    # BÚSQUEDA TOTALMENTE NUEVA Y SIMPLE
     if search:
-        conditions = []
-        search_terms = search.split()
+        search_term = f'%{search}%'
         
-        # ============================================
-        # 1. SI ES NÚMERO: BUSCAR POR ID EXACTO
-        # ============================================
-        if search.isdigit():
-            conditions.append(Cita.id == int(search))
-        else:
-            # ============================================
-            # 2. SI NO ES NÚMERO: BUSCAR POR TEXTO
-            # ============================================
-            
-            conditions.append(
-                (Paciente.nombres + ' ' + Paciente.apellidos).ilike(f'%{search}%')
+        # Buscar IDs de pacientes que coinciden
+        pacientes_subquery = db.session.query(Paciente.id).filter(
+            db.or_(
+                Paciente.nombres.ilike(search_term),
+                Paciente.apellidos.ilike(search_term),
+                Paciente.ci.ilike(search_term)
             )
-            
-            # Buscar por nombre o apellido individual
-            for term in search_terms:
-                conditions.append(Cita.paciente.has(Paciente.nombres.ilike(f'%{term}%')))
-                conditions.append(Cita.paciente.has(Paciente.apellidos.ilike(f'%{term}%')))
-            
-            # Buscar por CI del paciente
-            conditions.append(Cita.paciente.has(Paciente.ci.ilike(f'%{search}%')))
-            
-            # Buscar por médico
-            for term in search_terms:
-                conditions.append(Cita.medico.has(Medico.nombre.ilike(f'%{term}%')))
-                conditions.append(Cita.medico.has(Medico.apellidos.ilike(f'%{term}%')))
-            
-            # Buscar por motivo y estado
-            conditions.append(Cita.motivo.ilike(f'%{search}%'))
-            conditions.append(Cita.estado.ilike(f'%{search}%'))
+        ).subquery()
         
-        # Aplicar todas las condiciones con OR
-        if conditions:
-            query = query.filter(db.or_(*conditions))
+        # Buscar IDs de médicos que coinciden
+        medicos_subquery = db.session.query(Medico.id).filter(
+            db.or_(
+                Medico.nombre.ilike(search_term),
+                Medico.apellidos.ilike(search_term)
+            )
+        ).subquery()
+        
+        # Aplicar filtros
+        query = query.filter(
+            db.or_(
+                Cita.paciente_id.in_(pacientes_subquery),
+                Cita.medico_id.in_(medicos_subquery),
+                Cita.motivo.ilike(search_term),
+                Cita.estado.ilike(search_term)
+            )
+        )
     
     # Ordenar por ID DESCENDENTE (más reciente primero)
     citas = query.order_by(Cita.id.desc()).all()
